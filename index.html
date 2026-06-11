@@ -8,30 +8,28 @@
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg:        #1a1a0f;
-      --bg2:       #1f1f14;
-      --bg3:       #252518;
-      --panel:     #1c1c12;
-      --border:    #3a3a28;
-      --border2:   #4a4a35;
-      --yellow:    #c8b84a;
-      --yellow2:   #e8d870;
-      --yellow-dim:#6b6325;
-      --green:     #4a7a3a;
-      --green-glow:#5a9a48;
-      --red:       #7a3a3a;
-      --red-glow:  #c05050;
-      --blue:      #3a5a7a;
-      --blue-glow: #5a8ab0;
-      --grey:      #6a6a55;
-      --text:      #d4cc8a;
-      --text-dim:  #8a835a;
-      --text-muted:#5a5540;
-      --flicker:   rgba(200,184,74,0.03);
+      --bg:         #1a1a0f;
+      --bg2:        #1f1f14;
+      --bg3:        #252518;
+      --panel:      #1c1c12;
+      --border:     #3a3a28;
+      --border2:    #4a4a35;
+      --yellow:     #c8b84a;
+      --yellow2:    #e8d870;
+      --yellow-dim: #6b6325;
+      --green:      #4a7a3a;
+      --green-glow: #5a9a48;
+      --red:        #7a3a3a;
+      --red-glow:   #c05050;
+      --blue:       #3a5a7a;
+      --blue-glow:  #5a8ab0;
+      --grey:       #6a6a55;
+      --text:       #d4cc8a;
+      --text-dim:   #8a835a;
+      --text-muted: #5a5540;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     html { scroll-behavior: smooth; }
 
     body {
@@ -43,23 +41,16 @@
       overflow-x: hidden;
     }
 
-    /* CRT scanline overlay */
+    /* CRT scanlines */
     body::before {
       content: '';
       position: fixed;
       inset: 0;
-      background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(0,0,0,0.08) 2px,
-        rgba(0,0,0,0.08) 4px
-      );
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
       pointer-events: none;
       z-index: 9999;
     }
 
-    /* Ambient bg texture */
     body::after {
       content: '';
       position: fixed;
@@ -77,184 +68,73 @@
     header {
       border-bottom: 1px solid var(--border);
       padding: 0 24px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(26,26,15,0.95);
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(26,26,15,0.96);
       backdrop-filter: blur(8px);
     }
-
     .header-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      max-width: 1100px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
       height: 56px;
     }
-
     .logo {
-      font-family: 'VT323', monospace;
-      font-size: 26px;
-      color: var(--yellow);
-      letter-spacing: 2px;
+      font-family: 'VT323', monospace; font-size: 26px;
+      color: var(--yellow); letter-spacing: 2px;
       text-shadow: 0 0 20px rgba(200,184,74,0.4);
       text-decoration: none;
     }
-
     .logo span { color: var(--text-dim); font-size: 14px; font-family: 'Share Tech Mono', monospace; margin-left: 12px; vertical-align: middle; }
-
     nav { display: flex; gap: 24px; align-items: center; }
-    nav a {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 12px;
-      color: var(--text-dim);
-      text-decoration: none;
-      letter-spacing: 1px;
-      transition: color 0.2s;
-    }
+    nav a { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--text-dim); text-decoration: none; letter-spacing: 1px; transition: color 0.2s; }
     nav a:hover { color: var(--yellow); }
-
-    .admin-btn {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 11px;
-      color: var(--yellow-dim);
-      border: 1px solid var(--yellow-dim);
-      padding: 5px 12px;
-      text-decoration: none;
-      letter-spacing: 1px;
-      transition: all 0.2s;
-    }
+    .admin-btn { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--yellow-dim); border: 1px solid var(--yellow-dim); padding: 5px 12px; text-decoration: none; letter-spacing: 1px; transition: all 0.2s; }
     .admin-btn:hover { color: var(--yellow); border-color: var(--yellow); background: rgba(200,184,74,0.06); }
 
     /* ── HERO ── */
-    .hero {
-      padding: 80px 0 60px;
-      text-align: center;
-      position: relative;
-    }
-
-    .hero-eyebrow {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 11px;
-      color: var(--text-muted);
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      margin-bottom: 20px;
-    }
-
+    .hero { padding: 80px 0 60px; text-align: center; }
+    .hero-eyebrow { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--text-muted); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 20px; }
     .hero-title {
       font-family: 'VT323', monospace;
       font-size: clamp(64px, 10vw, 120px);
       color: var(--yellow);
-      text-shadow:
-        0 0 40px rgba(200,184,74,0.3),
-        0 0 80px rgba(200,184,74,0.1);
-      line-height: 1;
-      letter-spacing: 6px;
-      margin-bottom: 16px;
+      text-shadow: 0 0 40px rgba(200,184,74,0.3), 0 0 80px rgba(200,184,74,0.1);
+      line-height: 1; letter-spacing: 6px; margin-bottom: 16px;
       animation: flicker 8s infinite;
     }
-
     @keyframes flicker {
-      0%, 95%, 100% { opacity: 1; }
-      96% { opacity: 0.85; }
-      97% { opacity: 1; }
-      98% { opacity: 0.9; }
-      99% { opacity: 1; }
+      0%,95%,100%{opacity:1} 96%{opacity:0.85} 97%{opacity:1} 98%{opacity:0.9} 99%{opacity:1}
     }
-
-    .hero-sub {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 13px;
-      color: var(--text-dim);
-      letter-spacing: 2px;
-      margin-bottom: 48px;
-    }
+    .hero-sub { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--text-dim); letter-spacing: 2px; margin-bottom: 48px; }
 
     /* ── STATUS BAR ── */
-    .status-bar {
-      display: flex;
-      gap: 1px;
-      background: var(--border);
-      border: 1px solid var(--border);
-      margin-bottom: 64px;
-      overflow: hidden;
-    }
-
-    .status-item {
-      flex: 1;
-      background: var(--panel);
-      padding: 16px 20px;
-      text-align: center;
-    }
-
-    .status-num {
-      font-family: 'VT323', monospace;
-      font-size: 36px;
-      line-height: 1;
-      margin-bottom: 4px;
-    }
-
-    .status-label {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 10px;
-      color: var(--text-muted);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-    }
-
-    .s-upcoming .status-num { color: var(--blue-glow); }
-    .s-current  .status-num { color: var(--yellow); }
-    .s-done     .status-num { color: var(--green-glow); }
+    .status-bar { display: flex; gap: 1px; background: var(--border); border: 1px solid var(--border); margin-bottom: 64px; overflow: hidden; }
+    .status-item { flex: 1; background: var(--panel); padding: 16px 20px; text-align: center; }
+    .status-num { font-family: 'VT323', monospace; font-size: 36px; line-height: 1; margin-bottom: 4px; }
+    .status-label { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; }
+    .s-upcoming .status-num  { color: var(--blue-glow); }
+    .s-current  .status-num  { color: var(--yellow); }
+    .s-done     .status-num  { color: var(--green-glow); }
     .s-cancelled .status-num { color: var(--red-glow); }
 
     /* ── SECTION ── */
     .section { margin-bottom: 56px; }
+    .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+    .section-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .section-title { font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; }
+    .section-count { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--text-muted); margin-left: auto; }
 
-    .section-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 20px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .section-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .section-title {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-    }
-
-    .section-count {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 10px;
-      color: var(--text-muted);
-      margin-left: auto;
-    }
-
-    /* Status colours */
-    .upcoming  .section-dot { background: var(--blue-glow); box-shadow: 0 0 6px var(--blue-glow); }
-    .upcoming  .section-title { color: var(--blue-glow); }
-    .current   .section-dot { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); animation: pulse 2s infinite; }
-    .current   .section-title { color: var(--yellow); }
-    .done      .section-dot { background: var(--green-glow); box-shadow: 0 0 6px var(--green-glow); }
-    .done      .section-title { color: var(--green-glow); }
-    .cancelled .section-dot { background: var(--red-glow); box-shadow: 0 0 6px var(--red-glow); }
-    .cancelled .section-title { color: var(--red-glow); }
+    .upcoming  .section-dot  { background: var(--blue-glow); box-shadow: 0 0 6px var(--blue-glow); }
+    .upcoming  .section-title{ color: var(--blue-glow); }
+    .current   .section-dot  { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); animation: pulse 2s infinite; }
+    .current   .section-title{ color: var(--yellow); }
+    .done      .section-dot  { background: var(--green-glow); box-shadow: 0 0 6px var(--green-glow); }
+    .done      .section-title{ color: var(--green-glow); }
+    .cancelled .section-dot  { background: var(--red-glow); box-shadow: 0 0 6px var(--red-glow); }
+    .cancelled .section-title{ color: var(--red-glow); }
 
     @keyframes pulse {
-      0%, 100% { box-shadow: 0 0 6px var(--yellow); }
-      50% { box-shadow: 0 0 14px var(--yellow), 0 0 24px rgba(200,184,74,0.3); }
+      0%,100%{ box-shadow: 0 0 6px var(--yellow); }
+      50%    { box-shadow: 0 0 14px var(--yellow), 0 0 24px rgba(200,184,74,0.3); }
     }
 
     /* ── CARDS ── */
@@ -263,132 +143,90 @@
     .card {
       background: var(--panel);
       border: 1px solid var(--border);
-      padding: 18px 22px;
       transition: border-color 0.2s, background 0.2s;
-      cursor: default;
+      overflow: hidden;
     }
-
     .card:hover { border-color: var(--border2); background: var(--bg3); }
 
-    .card-title {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 14px;
-      color: var(--text);
-      margin-bottom: 6px;
-      letter-spacing: 0.5px;
+    /* card image */
+    .card-image {
+      width: 100%;
+      max-height: 280px;
+      object-fit: cover;
+      display: block;
+      border-bottom: 1px solid var(--border);
+      filter: sepia(20%) brightness(0.85);
+      transition: filter 0.3s;
     }
+    .card:hover .card-image { filter: sepia(10%) brightness(0.95); }
 
-    .card-desc {
-      font-size: 13px;
-      color: var(--text-dim);
-      line-height: 1.6;
+    /* image gallery (multiple images) */
+    .card-gallery {
+      display: grid;
+      gap: 1px;
+      border-bottom: 1px solid var(--border);
     }
-
-    .card-desc ul {
-      list-style: none;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px 16px;
-      margin-top: 8px;
+    .card-gallery.cols-1 { grid-template-columns: 1fr; }
+    .card-gallery.cols-2 { grid-template-columns: 1fr 1fr; }
+    .card-gallery.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .card-gallery img {
+      width: 100%; height: 180px; object-fit: cover; display: block;
+      filter: sepia(20%) brightness(0.85); transition: filter 0.3s;
     }
+    .card:hover .card-gallery img { filter: sepia(10%) brightness(0.95); }
 
-    .card-desc ul li::before {
-      content: '›';
-      color: var(--text-muted);
-      margin-right: 6px;
-    }
+    .card-body { padding: 18px 22px; }
 
+    .card-title { font-family: 'Share Tech Mono', monospace; font-size: 14px; color: var(--text); margin-bottom: 6px; letter-spacing: 0.5px; }
+    .card-desc  { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+    .card-desc ul { list-style: none; display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 8px; }
+    .card-desc ul li::before { content: '›'; color: var(--text-muted); margin-right: 6px; }
     .card-desc ul li { font-size: 12px; color: var(--text-dim); }
-
-    .card-tag {
-      display: inline-block;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      padding: 2px 7px;
-      margin-right: 6px;
-      margin-top: 10px;
-      border: 1px solid currentColor;
-      opacity: 0.6;
-    }
-
+    .card-tag { display: inline-block; font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; padding: 2px 7px; margin-right: 6px; margin-top: 10px; border: 1px solid currentColor; opacity: 0.6; }
     .upcoming  .card-tag { color: var(--blue-glow); }
     .current   .card-tag { color: var(--yellow); }
-    .done      .card-tag { color: var(--green-glow); }
-
-    /* done strikethrough */
-    .done .card-title { opacity: 0.7; }
+    .done .card-title    { opacity: 0.7; }
     .done .card:hover .card-title { opacity: 1; }
 
-    /* ── STAFF SECTION ── */
-    .staff-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 2px;
-    }
-
-    .staff-card {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      padding: 16px 18px;
-    }
-
-    .staff-role {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--yellow-dim);
-      margin-bottom: 6px;
-    }
-
-    .staff-name {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 14px;
-      color: var(--text);
-    }
-
+    /* ── STAFF ── */
+    .staff-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 2px; }
+    .staff-card { background: var(--panel); border: 1px solid var(--border); padding: 16px 18px; }
+    .staff-role { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--yellow-dim); margin-bottom: 6px; }
+    .staff-name { font-family: 'Share Tech Mono', monospace; font-size: 14px; color: var(--text); }
+    .staff-desc { font-size: 11px; color: var(--text-muted); margin-top: 4px; font-style: italic; }
     .staff-tags { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px; }
-
-    .tag {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 1px;
-      padding: 2px 6px;
-      border: 1px solid var(--border2);
-      color: var(--text-muted);
-    }
+    .tag { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 1px; padding: 2px 6px; border: 1px solid var(--border2); color: var(--text-muted); }
+    .tag-supervisor  { border-color: var(--blue-glow);  color: var(--blue-glow);  opacity: 0.8; }
+    .tag-qc          { border-color: var(--yellow-dim); color: var(--yellow);     opacity: 0.8; }
+    .tag-permanent   { border-color: #7a5a9a;           color: #a888cc;            opacity: 0.8; }
+    .tag-contractor  { border-color: #7a6a3a;           color: #c8a84a;            opacity: 0.8; }
 
     /* ── FOOTER ── */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 32px 24px;
-      margin-top: 80px;
-    }
+    footer { border-top: 1px solid var(--border); padding: 32px 24px; margin-top: 80px; }
+    .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .footer-text { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--text-muted); letter-spacing: 1px; }
 
-    .footer-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
+    /* ── LIGHTBOX ── */
+    .lightbox {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.92);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 99998; opacity: 0; pointer-events: none; transition: opacity 0.2s;
     }
-
-    .footer-text {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 11px;
-      color: var(--text-muted);
-      letter-spacing: 1px;
+    .lightbox.open { opacity: 1; pointer-events: all; }
+    .lightbox img { max-width: 90vw; max-height: 85vh; object-fit: contain; border: 1px solid var(--border2); }
+    .lightbox-close {
+      position: absolute; top: 20px; right: 24px;
+      font-family: 'Share Tech Mono', monospace; font-size: 20px;
+      color: var(--text-dim); cursor: pointer; background: none; border: none;
+      transition: color 0.2s;
     }
+    .lightbox-close:hover { color: var(--yellow); }
 
-    /* ── RESPONSIVE ── */
     @media (max-width: 600px) {
       .status-bar { flex-direction: column; }
       nav { gap: 12px; }
       .hero-title { font-size: 64px; }
+      .card-gallery.cols-3 { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
@@ -413,22 +251,10 @@
     <p class="hero-sub">Track what's being built, what's coming, and what's done.</p>
 
     <div class="status-bar">
-      <div class="status-item s-upcoming">
-        <div class="status-num">5</div>
-        <div class="status-label">Upcoming</div>
-      </div>
-      <div class="status-item s-current">
-        <div class="status-num">3</div>
-        <div class="status-label">In Progress</div>
-      </div>
-      <div class="status-item s-done">
-        <div class="status-num">2</div>
-        <div class="status-label">Completed</div>
-      </div>
-      <div class="status-item s-cancelled">
-        <div class="status-num">0</div>
-        <div class="status-label">Cancelled</div>
-      </div>
+      <div class="status-item s-upcoming"><div class="status-num">5</div><div class="status-label">Upcoming</div></div>
+      <div class="status-item s-current"> <div class="status-num">3</div><div class="status-label">In Progress</div></div>
+      <div class="status-item s-done">    <div class="status-num">2</div><div class="status-label">Completed</div></div>
+      <div class="status-item s-cancelled"><div class="status-num">0</div><div class="status-label">Cancelled</div></div>
     </div>
   </section>
 
@@ -444,30 +270,36 @@
       <div class="cards">
 
         <div class="card">
-          <div class="card-title">Finishing Major Areas</div>
-          <div class="card-desc">
-            Active construction of the core map spaces.
-            <ul>
-              <li>Main layout</li>
-              <li>Throne Room</li>
-              <li>Furniture Pile Room</li>
-              <li>Misc Rooms</li>
-              <li>Async Speaker Outpost</li>
-              <li>Ramp / Still Life Room</li>
-              <li>Lamp / Furniture Areas</li>
-              <li>Christmas Tree Room</li>
-            </ul>
+          <div class="card-body">
+            <div class="card-title">Finishing Major Areas</div>
+            <div class="card-desc">
+              Active construction of the core map spaces.
+              <ul>
+                <li>Main layout</li>
+                <li>Throne Room</li>
+                <li>Furniture Pile Room</li>
+                <li>Misc Rooms</li>
+                <li>Async Speaker Outpost</li>
+                <li>Ramp / Still Life Room</li>
+                <li>Lamp / Furniture Areas</li>
+                <li>Christmas Tree Room</li>
+              </ul>
+            </div>
           </div>
         </div>
 
         <div class="card">
-          <div class="card-title">Finishing Key Areas</div>
-          <div class="card-desc">Finalising the primary landmark spaces within the complex.</div>
+          <div class="card-body">
+            <div class="card-title">Finishing Key Areas</div>
+            <div class="card-desc">Finalising the primary landmark spaces within The Complex.</div>
+          </div>
         </div>
 
         <div class="card">
-          <div class="card-title">Spearhead System Setup</div>
-          <div class="card-desc">Being completed by Asclepiuszs. Core system infrastructure.</div>
+          <div class="card-body">
+            <div class="card-title">Spearhead System Setup</div>
+            <div class="card-desc">Core system infrastructure. Being completed by Asclepiuszs.</div>
+          </div>
         </div>
 
       </div>
@@ -483,48 +315,58 @@
       <div class="cards">
 
         <div class="card">
-          <div class="card-title">ASYNC Hazmat Morphs</div>
-          <div class="card-desc">Hazmat character morphs for the ASYNC faction.</div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">KV-31 Threshold &amp; Outpost</div>
-          <div class="card-desc">Construction of the KV-31 threshold zone and its associated outpost.</div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">ASYNC Facility</div>
-          <div class="card-desc">Full ASYNC faction facility area build-out.</div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">First Major Update</div>
-          <div class="card-desc">
-            First large post-launch content drop.
-            <ul>
-              <li>Neighborhood</li>
-              <li>Pools (TBD)</li>
-              <li>Major map expansions</li>
-              <li>Misc areas</li>
-              <li>Tropical Room</li>
-            </ul>
+          <div class="card-body">
+            <div class="card-title">ASYNC Hazmat Morphs</div>
+            <div class="card-desc">Hazmat character morphs for the ASYNC faction.</div>
           </div>
-          <span class="card-tag">Major Update</span>
         </div>
 
         <div class="card">
-          <div class="card-title">Second Major Update</div>
-          <div class="card-desc">
-            Second large content expansion.
-            <ul>
-              <li>Async Facility (expanded)</li>
-              <li>Library from end credits</li>
-              <li>Giant pit / multi-layer room</li>
-              <li>Store plaza from end credits</li>
-              <li>Other areas</li>
-            </ul>
+          <div class="card-body">
+            <div class="card-title">KV-31 Threshold &amp; Outpost</div>
+            <div class="card-desc">Construction of the KV-31 threshold zone and its associated outpost.</div>
           </div>
-          <span class="card-tag">Major Update</span>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="card-title">ASYNC Facility</div>
+            <div class="card-desc">Full ASYNC faction facility area build-out.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="card-title">First Major Update</div>
+            <div class="card-desc">
+              First large post-launch content drop.
+              <ul>
+                <li>Neighborhood</li>
+                <li>Pools (TBD)</li>
+                <li>Major map expansions</li>
+                <li>Misc areas</li>
+                <li>Tropical Room</li>
+              </ul>
+            </div>
+            <span class="card-tag">Major Update</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="card-title">Second Major Update</div>
+            <div class="card-desc">
+              Second large content expansion.
+              <ul>
+                <li>Async Facility (expanded)</li>
+                <li>Library from end credits</li>
+                <li>Giant pit / multi-layer room</li>
+                <li>Store plaza from end credits</li>
+                <li>Other areas</li>
+              </ul>
+            </div>
+            <span class="card-tag">Major Update</span>
+          </div>
         </div>
 
       </div>
@@ -538,17 +380,8 @@
         <span class="section-count">2 items</span>
       </div>
       <div class="cards">
-
-        <div class="card">
-          <div class="card-title">ASYNC Non-Hazmat Morphs</div>
-          <div class="card-desc">Non-hazmat character morphs for the ASYNC faction. ✓</div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">Animations for the Game</div>
-          <div class="card-desc">Core animation set for game characters and interactions. ✓</div>
-        </div>
-
+        <div class="card"><div class="card-body"><div class="card-title">ASYNC Non-Hazmat Morphs</div><div class="card-desc">Non-hazmat character morphs for the ASYNC faction. ✓</div></div></div>
+        <div class="card"><div class="card-body"><div class="card-title">Animations for the Game</div><div class="card-desc">Core animation set for game characters and interactions. ✓</div></div></div>
       </div>
     </section>
 
@@ -560,27 +393,27 @@
         <span class="section-count">0 items</span>
       </div>
       <div class="cards">
-        <div class="card">
-          <div class="card-title" style="color:var(--text-muted); font-style:italic;">Nothing cancelled yet.</div>
-        </div>
+        <div class="card"><div class="card-body"><div class="card-title" style="color:var(--text-muted);font-style:italic;">Nothing cancelled yet.</div></div></div>
       </div>
     </section>
 
   </div>
 
-  <!-- STAFF -->
-  <section id="staff" class="section" style="margin-top:80px;">
-    <div class="section-header">
-      <div class="section-dot" style="background:var(--yellow-dim);"></div>
-      <span class="section-title" style="color:var(--yellow-dim); font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:3px; text-transform:uppercase;">Development Team</span>
+  <!-- ── STAFF ── -->
+  <section id="staff" style="margin-top:80px; margin-bottom:80px;">
+    <div class="section-header" style="margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border);">
+      <div class="section-dot" style="background:var(--yellow-dim);width:8px;height:8px;border-radius:50%;flex-shrink:0;"></div>
+      <span style="font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--yellow-dim);">Development Team</span>
     </div>
     <div class="staff-grid">
 
       <div class="staff-card">
         <div class="staff-role">Project Manager</div>
         <div class="staff-name">BenefactorsBlade</div>
+        <div class="staff-desc">El Duche of Development</div>
         <div class="staff-tags">
-          <span class="tag">Management</span>
+          <span class="tag tag-supervisor">Supervisor</span>
+          <span class="tag tag-permanent">Permanent</span>
         </div>
       </div>
 
@@ -588,10 +421,31 @@
         <div class="staff-role">Lead Developer</div>
         <div class="staff-name">Asclepiuszs</div>
         <div class="staff-tags">
-          <span class="tag">Scripting</span>
-          <span class="tag">Supervisor</span>
-          <span class="tag">Modeling</span>
-          <span class="tag">Quality Control</span>
+          <span class="tag tag-supervisor">Supervisor</span>
+          <span class="tag tag-qc">Quality Control</span>
+          <span class="tag">System Editor</span>
+          <span class="tag tag-permanent">Permanent</span>
+        </div>
+      </div>
+
+      <div class="staff-card">
+        <div class="staff-role">Developer</div>
+        <div class="staff-name">killer2006ready</div>
+        <div class="staff-tags">
+          <span class="tag">Scripter</span>
+          <span class="tag">Animator</span>
+          <span class="tag tag-permanent">Permanent</span>
+        </div>
+      </div>
+
+      <div class="staff-card">
+        <div class="staff-role">Developer</div>
+        <div class="staff-name">MissCamelStealer</div>
+        <div class="staff-tags">
+          <span class="tag">Builder</span>
+          <span class="tag">Environment</span>
+          <span class="tag">Texturing</span>
+          <span class="tag tag-permanent">Permanent</span>
         </div>
       </div>
 
@@ -599,19 +453,36 @@
         <div class="staff-role">Developer</div>
         <div class="staff-name">The_BUDZOL</div>
         <div class="staff-tags">
-          <span class="tag">Modeling</span>
-          <span class="tag">Environment</span>
-          <span class="tag">Quality Control</span>
+          <span class="tag">Builder</span>
+          <span class="tag">Scripter</span>
+          <span class="tag tag-permanent">Permanent</span>
         </div>
       </div>
 
       <div class="staff-card">
         <div class="staff-role">Developer</div>
-        <div class="staff-name">tfghhe (Benz)</div>
+        <div class="staff-name">Metakuchi</div>
         <div class="staff-tags">
-          <span class="tag">Scripting</span>
-          <span class="tag">Supervisor</span>
-          <span class="tag">Quality Control</span>
+          <span class="tag">Builder</span>
+          <span class="tag tag-permanent">Permanent</span>
+        </div>
+      </div>
+
+      <div class="staff-card">
+        <div class="staff-role">Developer</div>
+        <div class="staff-name">Benz (tfghhe)</div>
+        <div class="staff-tags">
+          <span class="tag">Modeling</span>
+          <span class="tag">Builder</span>
+          <span class="tag tag-permanent">Permanent</span>
+        </div>
+      </div>
+
+      <div class="staff-card">
+        <div class="staff-role">QA Tester</div>
+        <div class="staff-name">BritannicHighIander</div>
+        <div class="staff-tags">
+          <span class="tag tag-qc">Quality Control</span>
         </div>
       </div>
 
@@ -627,11 +498,32 @@
   </div>
 </footer>
 
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()" />
+</div>
+
 <script>
-  // Live date
-  const d = new Date();
   document.getElementById('last-updated').textContent =
-    d.toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+    new Date().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+
+  function openLightbox(src) {
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+  // Make card images clickable for lightbox
+  document.querySelectorAll('.card-image, .card-gallery img').forEach(img => {
+    img.style.cursor = 'zoom-in';
+    img.addEventListener('click', () => openLightbox(img.src));
+  });
 </script>
 
 </body>
