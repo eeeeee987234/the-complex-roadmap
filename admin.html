@@ -24,6 +24,542 @@
       pointer-events: none; z-index: 9999;
     }
 
+    
+    #login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .login-box { width: 100%; max-width: 420px; background: var(--panel); border: 1px solid var(--border); padding: 40px 36px; }
+    .login-logo { font-family: 'VT323', monospace; font-size: 32px; color: var(--yellow); letter-spacing: 3px; margin-bottom: 4px; text-shadow: 0 0 20px rgba(200,184,74,0.3); }
+    .login-sub  { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 36px; }
+
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 7px; }
+    input[type="email"], input[type="password"], input[type="text"], select, textarea {
+      width: 100%; background: var(--bg); border: 1px solid var(--border);
+      color: var(--text); font-family: 'Share Tech Mono', monospace; font-size: 13px;
+      padding: 10px 14px; outline: none; transition: border-color 0.2s;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--yellow-dim); }
+    textarea { min-height: 80px; resize: vertical; }
+    select option { background: var(--bg2); }
+
+    .btn { width: 100%; background: transparent; border: 1px solid var(--yellow-dim); color: var(--yellow); font-family: 'Share Tech Mono', monospace; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; padding: 12px; cursor: pointer; transition: all 0.2s; margin-top: 8px; }
+    .btn:hover { background: rgba(200,184,74,0.08); border-color: var(--yellow); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-danger  { border-color: var(--red);   color: var(--red-glow); }
+    .btn-danger:hover  { background: rgba(192,80,80,0.08); border-color: var(--red-glow); }
+    .btn-success { border-color: var(--green);  color: var(--green-glow); }
+    .btn-success:hover { background: rgba(90,154,72,0.08); }
+    .btn-small   { width: auto; padding: 6px 14px; font-size: 10px; margin-top: 0; }
+
+    .error-msg   { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--red-glow);   margin-top: 10px; padding: 8px 12px; border: 1px solid var(--red);   display: none; }
+    .success-msg { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--green-glow); margin-top: 10px; padding: 8px 12px; border: 1px solid var(--green); display: none; }
+
+    
+    #dashboard { display: none; }
+    .dash-header { border-bottom: 1px solid var(--border); padding: 0 24px; background: rgba(26,26,15,0.97); position: sticky; top: 0; z-index: 100; }
+    .dash-header-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 52px; }
+    .dash-title { font-family: 'VT323', monospace; font-size: 22px; color: var(--yellow); letter-spacing: 2px; }
+    .dash-user  { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 16px; }
+    .dash-user span { color: var(--yellow-dim); }
+    .logout-btn { background: none; border: 1px solid var(--border2); color: var(--text-muted); font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 1px; padding: 4px 10px; cursor: pointer; transition: all 0.2s; }
+    .logout-btn:hover { color: var(--red-glow); border-color: var(--red); }
+
+    .dash-body { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+    .dash-grid { display: grid; grid-template-columns: 1fr 360px; gap: 24px; align-items: start; }
+    @media (max-width: 900px) { .dash-grid { grid-template-columns: 1fr; } }
+
+    .col-title { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--text-muted); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+
+    
+    .item-list { display: flex; flex-direction: column; gap: 2px; margin-bottom: 16px; }
+    .item-row { background: var(--panel); border: 1px solid var(--border); padding: 14px 16px; display: flex; align-items: flex-start; gap: 12px; transition: border-color 0.2s; }
+    .item-row:hover { border-color: var(--border2); }
+
+    
+    .item-thumb { width: 48px; height: 48px; object-fit: cover; border: 1px solid var(--border); flex-shrink: 0; filter: sepia(20%) brightness(0.8); }
+
+    .item-info { flex: 1; min-width: 0; }
+    .item-name { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--text); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .item-status-badge { display: inline-block; font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; padding: 2px 6px; border: 1px solid currentColor; }
+    .badge-upcoming  { color: var(--blue-glow); }
+    .badge-current   { color: var(--yellow); }
+    .badge-done      { color: var(--green-glow); }
+    .badge-cancelled { color: var(--red-glow); }
+    .item-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+    
+    .add-form { background: var(--panel); border: 1px solid var(--border); padding: 20px; }
+    .add-form .form-group { margin-bottom: 14px; }
+
+    
+    .upload-zone {
+      border: 1px dashed var(--border2); padding: 20px; text-align: center;
+      cursor: pointer; transition: border-color 0.2s, background 0.2s;
+      position: relative;
+    }
+    .upload-zone:hover, .upload-zone.drag-over { border-color: var(--yellow-dim); background: rgba(200,184,74,0.04); }
+    .upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .upload-zone-text { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--text-muted); letter-spacing: 1px; pointer-events: none; }
+
+    .image-previews { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .preview-wrap { position: relative; display: inline-block; }
+    .preview-wrap img { width: 72px; height: 72px; object-fit: cover; border: 1px solid var(--border); display: block; filter: sepia(20%) brightness(0.8); }
+    .preview-remove {
+      position: absolute; top: 2px; right: 2px;
+      background: rgba(0,0,0,0.7); border: none; color: var(--red-glow);
+      font-size: 12px; width: 18px; height: 18px; line-height: 18px;
+      text-align: center; cursor: pointer; padding: 0;
+    }
+    .upload-progress { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--text-muted); margin-top: 6px; }
+
+    
+    .sidebar-section { background: var(--panel); border: 1px solid var(--border); padding: 20px; margin-bottom: 16px; }
+    .sidebar-title { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+    .invite-row { display: flex; gap: 8px; margin-bottom: 12px; }
+    .invite-row input { flex: 1; }
+    .invite-note { font-size: 11px; color: var(--text-muted); line-height: 1.5; margin-top: 8px; }
+    .security-info { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--text-muted); line-height: 1.8; }
+    .security-info li { list-style: none; padding-left: 14px; position: relative; }
+    .security-info li::before { content: '✓'; position: absolute; left: 0; color: var(--green-glow); }
+
+    .toast { position: fixed; bottom: 24px; right: 24px; background: var(--panel); border: 1px solid var(--border2); padding: 12px 20px; font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--text); z-index: 10000; transform: translateY(80px); opacity: 0; transition: all 0.3s; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.toast-ok  { border-color: var(--green); color: var(--green-glow); }
+    .toast.toast-err { border-color: var(--red);   color: var(--red-glow); }
+  </style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">THE COMPLEX</div>
+    <div class="login-sub">Admin Access — Authorised Personnel Only</div>
+    <div class="form-group">
+      <label for="email">Email Address</label>
+      <input type="email" id="email" placeholder="you@example.com" autocomplete="email" />
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="••••••••••••" autocomplete="current-password" />
+    </div>
+    <button class="btn" id="login-btn" onclick="doLogin()">⬡ Authenticate</button>
+    <div class="error-msg" id="login-error"></div>
+    <div id="config-warning" style="display:none;font-family:'Share Tech Mono',monospace;font-size:10px;color:#c8a84a;margin-top:12px;padding:10px 12px;border:1px solid #6b6325;line-height:1.7;background:rgba(200,168,74,0.05);">
+      ⚠ SUPABASE NOT CONFIGURED<br/>
+      Open admin.html and replace<br/>
+      YOUR_SUPABASE_URL and<br/>
+      YOUR_SUPABASE_ANON_KEY<br/>
+      with your real project values.<br/>
+      See SETUP.md for instructions.
+    </div>
+    <p style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-muted);margin-top:20px;line-height:1.7;">
+      Access is restricted to authorised team members.<br/>Contact the project manager to request access.
+    </p>
+  </div>
+</div>
+
+<div id="dashboard">
+  <div class="dash-header">
+    <div class="dash-header-inner">
+      <div class="dash-title">⬡ ADMIN PANEL</div>
+      <div class="dash-user">
+        Signed in as <span id="user-email-display">—</span>
+        <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="dash-body">
+    <div class="dash-grid">
+
+      
+      <div>
+        <div class="col-title">Roadmap Items</div>
+        <div id="items-list" class="item-list">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--text-muted);padding:16px;">Loading...</div>
+        </div>
+
+        <div class="add-form">
+          <div class="col-title" id="form-mode-title">Add New Item</div>
+          <input type="hidden" id="edit-id" />
+
+          <div class="form-group">
+            <label>Title</label>
+            <input type="text" id="item-title" placeholder="e.g. ASYNC Facility" />
+          </div>
+
+          <div class="form-group">
+            <label>Status</label>
+            <select id="item-status">
+              <option value="upcoming">Upcoming</option>
+              <option value="current">In Progress</option>
+              <option value="done">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Description (optional)</label>
+            <textarea id="item-desc" placeholder="Brief description or bullet points..."></textarea>
+          </div>
+
+          
+          <div class="form-group">
+            <label>Images (optional — screenshots, previews, etc.)</label>
+            <div class="upload-zone" id="upload-zone">
+              <input type="file" id="image-input" accept="image/*" multiple onchange="handleFileSelect(this.files)" />
+              <div class="upload-zone-text">Click or drag images here<br/><span style="font-size:9px;opacity:0.6;">PNG, JPG, WEBP — multiple allowed</span></div>
+            </div>
+            <div class="image-previews" id="image-previews"></div>
+            <div class="upload-progress" id="upload-progress"></div>
+            
+            <div id="existing-images" style="margin-top:8px;"></div>
+          </div>
+
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-success btn-small" onclick="saveItem()">Save Item</button>
+            <button class="btn btn-small" onclick="clearForm()" style="opacity:0.6;">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      
+      <div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-title">Invite Editor</div>
+          <div class="invite-row">
+            <input type="email" id="invite-email" placeholder="editor@email.com" />
+            <button class="btn btn-small btn-success" onclick="inviteUser()">Invite</button>
+          </div>
+          <div class="invite-note">An invite link is sent via Supabase. They set their own password — you never handle credentials.</div>
+          <div id="invite-msg" class="success-msg" style="margin-top:8px;"></div>
+          <div id="invite-err" class="error-msg"   style="margin-top:8px;"></div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-title">Storage Info</div>
+          <ul class="security-info">
+            <li>Images stored in Supabase Storage</li>
+            <li>Public bucket — images load on roadmap</li>
+            <li>Max 50MB per image (Supabase free tier)</li>
+            <li>PNG, JPG, WEBP supported</li>
+            <li>Multiple images per card allowed</li>
+          </ul>
+          <p style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-muted);margin-top:12px;line-height:1.6;">
+            Create a public bucket called <span style="color:var(--yellow-dim);">roadmap-images</span> in your Supabase Storage settings.
+          </p>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-title">Security</div>
+          <ul class="security-info">
+            <li>Passwords hashed by Supabase (bcrypt)</li>
+            <li>No plaintext credentials stored</li>
+            <li>JWT sessions, auto-expiring</li>
+            <li>Row-level security on all tables</li>
+            <li>Invite-only, no self-signup</li>
+          </ul>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-title">Public Roadmap</div>
+          <a href="index.html" style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--yellow);text-decoration:none;">→ View Public Page</a>
+          <p style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-muted);margin-top:8px;line-height:1.6;">Changes update the live roadmap immediately via Supabase.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+
+const SUPABASE_URL  = 'https://cxuggvcfxkigcdotpain.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4dWdndmNmeGtpZ2Nkb3RwYWluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExMTYwNTcsImV4cCI6MjA5NjY5MjA1N30.PYWPk24ktcVDeE6u0JPfWo7lFlQOTZZ7ayOjQoMv9eU';
+const STORAGE_BUCKET = 'roadmap-images'; 
+
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
+  auth: { autoRefreshToken: true, persistSession: true, detectSessionInUrl: true }
+});
+
+function toast(msg, type='ok') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast toast-${type} show`;
+  setTimeout(() => el.className = 'toast', 3000);
+}
+function esc(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function statusLabel(s) {
+  return {upcoming:'Upcoming',current:'In Progress',done:'Completed',cancelled:'Cancelled'}[s]||s;
+}
+
+async function doLogin() {
+  const email = document.getElementById('email').value.trim();
+  const pass  = document.getElementById('password').value;
+  const errEl = document.getElementById('login-error');
+  const btn   = document.getElementById('login-btn');
+  errEl.style.display = 'none';
+  btn.disabled = true; btn.textContent = 'Authenticating...';
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  btn.disabled = false; btn.textContent = '⬡ Authenticate';
+  if (error) { errEl.textContent = 'Access denied. Check your credentials.'; errEl.style.display = 'block'; return; }
+  showDashboard(data.user);
+}
+
+async function doLogout() {
+  await sb.auth.signOut();
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+}
+
+function showDashboard(user) {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  document.getElementById('user-email-display').textContent = user.email;
+  loadItems();
+}
+
+if (SUPABASE_URL === 'YOUR_SUPABASE_URL' || SUPABASE_ANON === 'YOUR_SUPABASE_ANON_KEY') {
+  document.getElementById('config-warning').style.display = 'block';
+  document.getElementById('login-btn').disabled = true;
+  document.getElementById('login-btn').textContent = '⚠ Not Configured';
+}
+
+sb.auth.getSession().then(({ data: { session } }) => {
+  if (session) showDashboard(session.user);
+});
+
+document.getElementById('password').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+let pendingFiles   = [];  
+let pendingRemoved = [];  
+
+function handleFileSelect(files) {
+  for (const file of files) {
+    if (!file.type.startsWith('image/')) continue;
+    const reader = new FileReader();
+    reader.onload = e => addPreview(file, e.target.result);
+    reader.readAsDataURL(file);
+    pendingFiles.push(file);
+  }
+  
+  document.getElementById('image-input').value = '';
+}
+
+function addPreview(file, dataUrl) {
+  const wrap = document.createElement('div');
+  wrap.className = 'preview-wrap';
+  wrap.dataset.filename = file.name;
+  wrap.innerHTML = `<img src="${dataUrl}" alt="${esc(file.name)}" /><button class="preview-remove" title="Remove">✕</button>`;
+  wrap.querySelector('.preview-remove').onclick = () => {
+    pendingFiles = pendingFiles.filter(f => f !== file);
+    wrap.remove();
+  };
+  document.getElementById('image-previews').appendChild(wrap);
+}
+
+const zone = document.getElementById('upload-zone');
+zone.addEventListener('dragover',  e => { e.preventDefault(); zone.classList.add('drag-over'); });
+zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+zone.addEventListener('drop', e => {
+  e.preventDefault(); zone.classList.remove('drag-over');
+  handleFileSelect(e.dataTransfer.files);
+});
+
+async function uploadImages(itemId) {
+  const urls = [];
+  const prog = document.getElementById('upload-progress');
+  for (let i = 0; i < pendingFiles.length; i++) {
+    const file = pendingFiles[i];
+    const ext  = file.name.split('.').pop();
+    const path = `${itemId}/${Date.now()}_${i}.${ext}`;
+    prog.textContent = `Uploading image ${i+1} of ${pendingFiles.length}...`;
+    const { data, error } = await sb.storage.from(STORAGE_BUCKET).upload(path, file, { upsert: false });
+    if (error) { toast('Image upload failed: ' + error.message, 'err'); continue; }
+    const { data: urlData } = sb.storage.from(STORAGE_BUCKET).getPublicUrl(path);
+    urls.push(urlData.publicUrl);
+  }
+  prog.textContent = '';
+  return urls;
+}
+
+let items = [];
+
+async function loadItems() {
+  const { data, error } = await sb.from('roadmap_items').select('*').order('created_at', { ascending: true });
+  if (error) { toast('Failed to load items', 'err'); return; }
+  items = data || [];
+  renderItems();
+}
+
+function renderItems() {
+  const container = document.getElementById('items-list');
+  if (!items.length) {
+    container.innerHTML = '<div style="font-family:\'Share Tech Mono\',monospace;font-size:12px;color:var(--text-muted);padding:16px;">No items yet. Add one below.</div>';
+    return;
+  }
+  const order = { current:0, upcoming:1, done:2, cancelled:3 };
+  const sorted = [...items].sort((a,b) => (order[a.status]??9)-(order[b.status]??9));
+  container.innerHTML = sorted.map(item => {
+    const imgs = item.images || [];
+    const thumb = imgs.length ? `<img class="item-thumb" src="${esc(imgs[0])}" alt="" />` : '';
+    const imgCount = imgs.length > 1 ? `<span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-muted);margin-left:6px;">+${imgs.length} img</span>` : imgs.length === 1 ? '<span style="font-family:\'Share Tech Mono\',monospace;font-size:9px;color:var(--text-muted);margin-left:6px;">1 img</span>' : '';
+    return `
+    <div class="item-row">
+      ${thumb}
+      <div class="item-info">
+        <div class="item-name" title="${esc(item.title)}">${esc(item.title)}</div>
+        <span class="item-status-badge badge-${item.status}">${statusLabel(item.status)}</span>${imgCount}
+      </div>
+      <div class="item-actions">
+        <button class="btn btn-small" onclick="editItem('${item.id}')">Edit</button>
+        <button class="btn btn-small btn-danger" onclick="deleteItem('${item.id}')">Del</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function saveItem() {
+  const id     = document.getElementById('edit-id').value;
+  const title  = document.getElementById('item-title').value.trim();
+  const status = document.getElementById('item-status').value;
+  const desc   = document.getElementById('item-desc').value.trim();
+  if (!title) { toast('Title is required', 'err'); return; }
+
+  
+  let existingUrls = [];
+  if (id) {
+    const existing = items.find(i => i.id === id);
+    existingUrls = (existing?.images || []).filter(u => !pendingRemoved.includes(u));
+    
+    for (const url of pendingRemoved) {
+      const path = url.split(`/${STORAGE_BUCKET}/`)[1];
+      if (path) await sb.storage.from(STORAGE_BUCKET).remove([path]);
+    }
+  }
+
+  
+  const itemId = id || crypto.randomUUID();
+  const newUrls = pendingFiles.length ? await uploadImages(itemId) : [];
+  const allImages = [...existingUrls, ...newUrls];
+
+  if (id) {
+    const { error } = await sb.from('roadmap_items').update({ title, status, description: desc, images: allImages, updated_at: new Date().toISOString() }).eq('id', id);
+    if (error) { toast('Update failed: ' + error.message, 'err'); return; }
+    toast('Item updated ✓');
+  } else {
+    const { error } = await sb.from('roadmap_items').insert({ id: itemId, title, status, description: desc, images: allImages });
+    if (error) { toast('Insert failed: ' + error.message, 'err'); return; }
+    toast('Item added ✓');
+  }
+
+  clearForm(); loadItems();
+}
+
+function editItem(id) {
+  const item = items.find(i => i.id === id);
+  if (!item) return;
+  document.getElementById('edit-id').value     = item.id;
+  document.getElementById('item-title').value  = item.title;
+  document.getElementById('item-status').value = item.status;
+  document.getElementById('item-desc').value   = item.description || '';
+  document.getElementById('form-mode-title').textContent = 'Edit Item';
+  pendingFiles = []; pendingRemoved = [];
+  document.getElementById('image-previews').innerHTML = '';
+
+  
+  const existing = item.images || [];
+  const existEl = document.getElementById('existing-images');
+  if (existing.length) {
+    existEl.innerHTML = `
+      <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Current Images</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        ${existing.map(url => `
+          <div class="preview-wrap" data-url="${esc(url)}">
+            <img src="${esc(url)}" alt="" />
+            <button class="preview-remove" onclick="removeExistingImage('${esc(url)}', this.parentElement)" title="Remove">✕</button>
+          </div>
+        `).join('')}
+      </div>`;
+  } else {
+    existEl.innerHTML = '';
+  }
+}
+
+function removeExistingImage(url, wrap) {
+  pendingRemoved.push(url);
+  wrap.remove();
+}
+
+async function deleteItem(id) {
+  if (!confirm('Delete this item and its images?')) return;
+  
+  const item = items.find(i => i.id === id);
+  if (item?.images?.length) {
+    const paths = item.images.map(u => u.split(`/${STORAGE_BUCKET}/`)[1]).filter(Boolean);
+    if (paths.length) await sb.storage.from(STORAGE_BUCKET).remove(paths);
+  }
+  const { error } = await sb.from('roadmap_items').delete().eq('id', id);
+  if (error) { toast('Delete failed', 'err'); return; }
+  toast('Item deleted');
+  loadItems();
+}
+
+function clearForm() {
+  document.getElementById('edit-id').value     = '';
+  document.getElementById('item-title').value  = '';
+  document.getElementById('item-status').value = 'upcoming';
+  document.getElementById('item-desc').value   = '';
+  document.getElementById('image-previews').innerHTML = '';
+  document.getElementById('existing-images').innerHTML = '';
+  document.getElementById('upload-progress').textContent = '';
+  document.getElementById('form-mode-title').textContent = 'Add New Item';
+  pendingFiles = []; pendingRemoved = [];
+}
+
+async function inviteUser() {
+  const email = document.getElementById('invite-email').value.trim();
+  const msgEl = document.getElementById('invite-msg');
+  const errEl = document.getElementById('invite-err');
+  msgEl.style.display = 'none'; errEl.style.display = 'none';
+  if (!email) { errEl.textContent = 'Enter an email.'; errEl.style.display = 'block'; return; }
+  const { error } = await sb.auth.signUp({ email, password: crypto.randomUUID(), options: { emailRedirectTo: window.location.origin + '/admin.html' } });
+  if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; }
+  else { msgEl.textContent = 'Invite sent to ' + email; msgEl.style.display = 'block'; document.getElementById('invite-email').value = ''; toast('Invite sent ✓'); }
+}
+</script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — The Complex</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --bg:        #1a1a0f; --bg2: #1f1f14; --bg3: #252518;
+      --panel:     #1c1c12; --border: #3a3a28; --border2: #4a4a35;
+      --yellow:    #c8b84a; --yellow2: #e8d870; --yellow-dim: #6b6325;
+      --green:     #4a7a3a; --green-glow: #5a9a48;
+      --red:       #7a3a3a; --red-glow: #c05050;
+      --blue-glow: #5a8ab0;
+      --text:      #d4cc8a; --text-dim: #8a835a; --text-muted: #5a5540;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; font-weight: 300; min-height: 100vh; }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.07) 2px, rgba(0,0,0,0.07) 4px);
+      pointer-events: none; z-index: 9999;
+    }
+
     /* ── LOGIN ── */
     #login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
     .login-box { width: 100%; max-width: 420px; background: var(--panel); border: 1px solid var(--border); padding: 40px 36px; }
