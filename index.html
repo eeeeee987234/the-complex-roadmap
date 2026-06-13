@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The Complex — Development Roadmap</title>
   <link rel="icon" type="image/png" href="/favicon.png">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Rzv8OD1HEVMUyRB0L4t6nrB/Kh52+eY6qpXCK5eUIxg=' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://cxuggvcfxkigcdotpain.supabase.co; connect-src https://cxuggvcfxkigcdotpain.supabase.co wss://cxuggvcfxkigcdotpain.supabase.co; object-src 'none'; base-uri 'none'; frame-ancestors 'none';" />
   <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" />
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
   <meta http-equiv="Referrer-Policy" content="no-referrer" />
@@ -342,7 +343,7 @@ async function loadRoadmap() {
   try {
     const { data, error } = await sb
       .from('roadmap_items')
-      .select('id, title, status, description, images, is_major, updated_at, sort_order')
+      .select('id, title, status, description, images, is_major, updated_at, created_at, sort_order')
       .order('sort_order', { ascending: true })
       .order('created_at',  { ascending: true });
 
