@@ -4,11 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The Complex — Development Roadmap</title>
-  <link rel="icon" type="image/png" href="/favicon.png">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Rzv8OD1HEVMUyRB0L4t6nrB/Kh52+eY6qpXCK5eUIxg=' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://cxuggvcfxkigcdotpain.supabase.co; connect-src https://cxuggvcfxkigcdotpain.supabase.co wss://cxuggvcfxkigcdotpain.supabase.co; object-src 'none'; base-uri 'none'; frame-ancestors 'none';" />
   <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" />
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
   <meta http-equiv="Referrer-Policy" content="no-referrer" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ayXqFSkp5AM6EWVJgDCu1QqyF6O3CGHNBXsqdpO0hHc=' https://cdn.jsdelivr.net; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://cxuggvcfxkigcdotpain.supabase.co; connect-src https://cxuggvcfxkigcdotpain.supabase.co wss://cxuggvcfxkigcdotpain.supabase.co; object-src 'none'; base-uri 'none'; frame-ancestors 'none';" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js" integrity="sha384-rHPFBSFKMEaKDMxPB7cSTZvWfYMaF6gF5tqUPuiLives7VqoLNFkpCfWIXsimfFT" crossorigin="anonymous"></script>
@@ -81,7 +80,6 @@
     .sec-done .card-title { opacity: 0.7; }
     .sec-done .card:hover .card-title { opacity: 1; }
     .empty-state { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--text-muted); padding: 18px 22px; background: var(--panel); border: 1px solid var(--border); font-style: italic; }
-    .error-state { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--red-glow); padding: 18px 22px; background: var(--panel); border: 1px solid var(--red); }
     .staff-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 2px; }
     .staff-card { background: var(--panel); border: 1px solid var(--border); padding: 16px 18px; }
     .staff-role { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--yellow-dim); margin-bottom: 6px; }
@@ -340,60 +338,58 @@ function renderCard(item) {
 }
 
 async function loadRoadmap() {
-  try {
-    const { data, error } = await sb
-      .from('roadmap_items')
-      .select('id, title, status, description, images, is_major, updated_at, created_at, sort_order')
-      .order('sort_order', { ascending: true })
-      .order('created_at',  { ascending: true });
+  const { data, error } = await sb
+    .from('roadmap_items')
+    .select('id, title, status, description, images, is_major, updated_at, sort_order')
+    .order('sort_order', { ascending: true })
+    .order('created_at',  { ascending: true });
 
-    if (error) throw error;
-
-    const groups = { current: [], upcoming: [], done: [], cancelled: [] };
-    (data || []).forEach(item => {
-      if (groups[item.status]) groups[item.status].push(item);
-    });
-
-    document.getElementById('count-upcoming').textContent  = groups.upcoming.length;
-    document.getElementById('count-current').textContent   = groups.current.length;
-    document.getElementById('count-done').textContent      = groups.done.length;
-    document.getElementById('count-cancelled').textContent = groups.cancelled.length;
-
-    Object.entries(groups).forEach(([status, items]) => {
-      const container = document.getElementById(`cards-${status}`);
-      const label     = document.getElementById(`label-${status}`);
-      label.textContent = `${items.length} item${items.length !== 1 ? 's' : ''}`;
-      container.innerHTML = '';
-      if (!items.length) {
-        const msg = document.createElement('div');
-        msg.className = 'empty-state';
-        msg.textContent = 'Nothing here yet.';
-        container.appendChild(msg);
-      } else {
-        items.forEach(item => container.appendChild(renderCard(item)));
-      }
-    });
-
-    const allItems = data || [];
-    if (allItems.length) {
-      const latest = allItems.reduce((a, b) =>
-        new Date(a.updated_at) > new Date(b.updated_at) ? a : b
-      );
-      if (latest.updated_at) {
-        document.getElementById('last-updated').textContent =
-          new Date(latest.updated_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-      }
-    }
-  } catch (err) {
-    console.error('Failed to load roadmap:', err);
+  if (error) {
     ['current','upcoming','done','cancelled'].forEach(s => {
       const el = document.getElementById(`cards-${s}`);
       el.innerHTML = '';
       const msg = document.createElement('div');
-      msg.className = 'error-state';
-      msg.textContent = 'Failed to load items. Check your Supabase connection.';
+      msg.className = 'empty-state';
+      msg.textContent = 'Could not load items.';
       el.appendChild(msg);
     });
+    return;
+  }
+
+  const groups = { current: [], upcoming: [], done: [], cancelled: [] };
+  (data || []).forEach(item => {
+    if (groups[item.status]) groups[item.status].push(item);
+  });
+
+  document.getElementById('count-upcoming').textContent  = groups.upcoming.length;
+  document.getElementById('count-current').textContent   = groups.current.length;
+  document.getElementById('count-done').textContent      = groups.done.length;
+  document.getElementById('count-cancelled').textContent = groups.cancelled.length;
+
+  Object.entries(groups).forEach(([status, items]) => {
+    const container = document.getElementById(`cards-${status}`);
+    const label     = document.getElementById(`label-${status}`);
+    label.textContent = `${items.length} item${items.length !== 1 ? 's' : ''}`;
+    container.innerHTML = '';
+    if (!items.length) {
+      const msg = document.createElement('div');
+      msg.className = 'empty-state';
+      msg.textContent = 'Nothing here yet.';
+      container.appendChild(msg);
+    } else {
+      items.forEach(item => container.appendChild(renderCard(item)));
+    }
+  });
+
+  const allItems = data || [];
+  if (allItems.length) {
+    const latest = allItems.reduce((a, b) =>
+      new Date(a.updated_at) > new Date(b.updated_at) ? a : b
+    );
+    if (latest.updated_at) {
+      document.getElementById('last-updated').textContent =
+        new Date(latest.updated_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
   }
 }
 
