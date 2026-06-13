@@ -4,51 +4,76 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The Complex — Development Roadmap</title>
-  <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" />
-  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-  <meta http-equiv="Referrer-Policy" content="no-referrer" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js" integrity="sha384-rHPFBSFKMEaKDMxPB7cSTZvWfYMaF6gF5tqUPuiLives7VqoLNFkpCfWIXsimfFT" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
-      --bg:#1a1a0f; --bg2:#1f1f14; --bg3:#252518;
-      --panel:#1c1c12; --border:#3a3a28; --border2:#4a4a35;
-      --yellow:#c8b84a; --yellow-dim:#6b6325;
-      --green-glow:#5a9a48; --red-glow:#c05050; --blue-glow:#5a8ab0;
-      --text:#d4cc8a; --text-dim:#8a835a; --text-muted:#5a5540;
+      --bg:         #1a1a0f;
+      --bg2:        #1f1f14;
+      --bg3:        #252518;
+      --panel:      #1c1c12;
+      --border:     #3a3a28;
+      --border2:    #4a4a35;
+      --yellow:     #c8b84a;
+      --yellow-dim: #6b6325;
+      --green-glow: #5a9a48;
+      --red-glow:   #c05050;
+      --blue-glow:  #5a8ab0;
+      --text:       #d4cc8a;
+      --text-dim:   #8a835a;
+      --text-muted: #5a5540;
     }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; font-weight: 300; min-height: 100vh; overflow-x: hidden; }
-    body::before { content: ''; position: fixed; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px); pointer-events: none; z-index: 9999; }
-    body::after { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(200,184,74,0.04) 0%, transparent 70%), radial-gradient(ellipse 40% 60% at 80% 80%, rgba(74,122,58,0.03) 0%, transparent 60%); pointer-events: none; z-index: 0; }
+
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
+      pointer-events: none; z-index: 9999;
+    }
+    body::after {
+      content: ''; position: fixed; inset: 0;
+      background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(200,184,74,0.04) 0%, transparent 70%),
+                  radial-gradient(ellipse 40% 60% at 80% 80%, rgba(74,122,58,0.03) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+
     .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
     header { border-bottom: 1px solid var(--border); padding: 0 24px; position: sticky; top: 0; z-index: 100; background: rgba(26,26,15,0.96); backdrop-filter: blur(8px); }
     .header-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 56px; }
-    .logo { font-family: 'VT323', monospace; font-size: 26px; color: var(--yellow); letter-spacing: 2px; text-shadow: 0 0 20px rgba(200,184,74,0.4); text-decoration: none; display: flex; align-items: center; gap: 12px; }
-    .logo-sub { color: var(--text-dim); font-size: 14px; font-family: 'Share Tech Mono', monospace; }
+    .logo { font-family: 'VT323', monospace; font-size: 26px; color: var(--yellow); letter-spacing: 2px; text-shadow: 0 0 20px rgba(200,184,74,0.4); text-decoration: none; }
+    .logo span { color: var(--text-dim); font-size: 14px; font-family: 'Share Tech Mono', monospace; margin-left: 12px; vertical-align: middle; }
     nav { display: flex; gap: 24px; align-items: center; }
     nav a { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--text-dim); text-decoration: none; letter-spacing: 1px; transition: color 0.2s; }
     nav a:hover { color: var(--yellow); }
+    .admin-btn { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--yellow-dim); border: 1px solid var(--yellow-dim); padding: 5px 12px; text-decoration: none; letter-spacing: 1px; transition: all 0.2s; }
+    .admin-btn:hover { color: var(--yellow); border-color: var(--yellow); background: rgba(200,184,74,0.06); }
+
     .hero { padding: 80px 0 60px; text-align: center; }
     .hero-eyebrow { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--text-muted); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 20px; }
     .hero-title { font-family: 'VT323', monospace; font-size: clamp(64px, 10vw, 120px); color: var(--yellow); text-shadow: 0 0 40px rgba(200,184,74,0.3), 0 0 80px rgba(200,184,74,0.1); line-height: 1; letter-spacing: 6px; margin-bottom: 16px; animation: flicker 8s infinite; }
     @keyframes flicker { 0%,95%,100%{opacity:1} 96%{opacity:0.85} 97%{opacity:1} 98%{opacity:0.9} 99%{opacity:1} }
     .hero-sub { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--text-dim); letter-spacing: 2px; margin-bottom: 48px; }
+
     .status-bar { display: flex; gap: 1px; background: var(--border); border: 1px solid var(--border); margin-bottom: 64px; overflow: hidden; }
     .status-item { flex: 1; background: var(--panel); padding: 16px 20px; text-align: center; }
-    .status-num { font-family: 'VT323', monospace; font-size: 36px; line-height: 1; margin-bottom: 4px; }
+    .status-num { font-family: 'VT323', monospace; font-size: 36px; line-height: 1; margin-bottom: 4px; transition: color 0.3s; }
     .status-label { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; }
     .s-upcoming .status-num  { color: var(--blue-glow); }
     .s-current  .status-num  { color: var(--yellow); }
     .s-done     .status-num  { color: var(--green-glow); }
     .s-cancelled .status-num { color: var(--red-glow); }
+
     .section { margin-bottom: 56px; }
     .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
     .section-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
     .section-title { font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; }
     .section-count { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--text-muted); margin-left: auto; }
+
     .sec-upcoming  .section-dot  { background: var(--blue-glow); box-shadow: 0 0 6px var(--blue-glow); }
     .sec-upcoming  .section-title{ color: var(--blue-glow); }
     .sec-current   .section-dot  { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); animation: pulse 2s infinite; }
@@ -57,28 +82,35 @@
     .sec-done      .section-title{ color: var(--green-glow); }
     .sec-cancelled .section-dot  { background: var(--red-glow); box-shadow: 0 0 6px var(--red-glow); }
     .sec-cancelled .section-title{ color: var(--red-glow); }
+
     @keyframes pulse { 0%,100%{box-shadow:0 0 6px var(--yellow)} 50%{box-shadow:0 0 14px var(--yellow),0 0 24px rgba(200,184,74,0.3)} }
+
     .cards { display: flex; flex-direction: column; gap: 2px; }
+
     .card { background: var(--panel); border: 1px solid var(--border); overflow: hidden; transition: border-color 0.2s, background 0.2s; }
     .card:hover { border-color: var(--border2); background: var(--bg3); }
+
     .card-gallery { display: grid; gap: 1px; border-bottom: 1px solid var(--border); }
     .card-gallery.cols-1 { grid-template-columns: 1fr; }
     .card-gallery.cols-2 { grid-template-columns: 1fr 1fr; }
     .card-gallery.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
     .card-gallery img { width: 100%; height: 200px; object-fit: cover; display: block; filter: sepia(20%) brightness(0.85); transition: filter 0.3s; cursor: zoom-in; }
     .card:hover .card-gallery img { filter: sepia(10%) brightness(0.95); }
+
     .card-body { padding: 18px 22px; }
     .card-title { font-family: 'Share Tech Mono', monospace; font-size: 14px; color: var(--text); margin-bottom: 6px; letter-spacing: 0.5px; }
-    .card-desc { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+    .card-desc  { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
     .card-desc ul { list-style: none; display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 8px; }
     .card-desc ul li::before { content: '›'; color: var(--text-muted); margin-right: 6px; }
     .card-desc ul li { font-size: 12px; color: var(--text-dim); }
     .card-tag { display: inline-block; font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; padding: 2px 7px; margin-right: 6px; margin-top: 10px; border: 1px solid currentColor; opacity: 0.6; }
-    .sec-upcoming .card-tag { color: var(--blue-glow); }
-    .sec-current  .card-tag { color: var(--yellow); }
-    .sec-done .card-title { opacity: 0.7; }
+    .sec-upcoming  .card-tag { color: var(--blue-glow); }
+    .sec-current   .card-tag { color: var(--yellow); }
+    .sec-done .card-title    { opacity: 0.7; }
     .sec-done .card:hover .card-title { opacity: 1; }
+
     .empty-state { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--text-muted); padding: 18px 22px; background: var(--panel); border: 1px solid var(--border); font-style: italic; }
+
     .staff-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 2px; }
     .staff-card { background: var(--panel); border: 1px solid var(--border); padding: 16px 18px; }
     .staff-role { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--yellow-dim); margin-bottom: 6px; }
@@ -87,18 +119,22 @@
     .staff-tags { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px; }
     .tag { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 1px; padding: 2px 6px; border: 1px solid var(--border2); color: var(--text-muted); }
     .tag-supervisor { border-color: var(--blue-glow); color: var(--blue-glow); opacity: 0.8; }
-    .tag-qc { border-color: var(--yellow-dim); color: var(--yellow); opacity: 0.8; }
-    .tag-permanent { border-color: #7a5a9a; color: #a888cc; opacity: 0.8; }
+    .tag-qc         { border-color: var(--yellow-dim); color: var(--yellow); opacity: 0.8; }
+    .tag-permanent  { border-color: #7a5a9a; color: #a888cc; opacity: 0.8; }
+
     .skeleton { background: linear-gradient(90deg, var(--panel) 25%, var(--bg3) 50%, var(--panel) 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; height: 72px; border: 1px solid var(--border); }
     @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
     footer { border-top: 1px solid var(--border); padding: 32px 24px; margin-top: 80px; }
     .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
     .footer-text { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--text-muted); letter-spacing: 1px; }
+
     .lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.92); display: flex; align-items: center; justify-content: center; z-index: 99998; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
     .lightbox.open { opacity: 1; pointer-events: all; }
     .lightbox img { max-width: 90vw; max-height: 85vh; object-fit: contain; border: 1px solid var(--border2); }
     .lightbox-close { position: absolute; top: 20px; right: 24px; font-family: 'Share Tech Mono', monospace; font-size: 20px; color: var(--text-dim); cursor: pointer; background: none; border: none; transition: color 0.2s; }
     .lightbox-close:hover { color: var(--yellow); }
+
     @media (max-width: 600px) {
       .status-bar { flex-direction: column; }
       nav { gap: 12px; }
@@ -111,13 +147,11 @@
 
 <header>
   <div class="header-inner">
-    <a href="index.html" class="logo">
-      THE COMPLEX
-      <span class="logo-sub">// ROADMAP</span>
-    </a>
+    <a href="index.html" class="logo">THE COMPLEX <span>
     <nav>
       <a href="#roadmap">Roadmap</a>
       <a href="#staff">Team</a>
+      <a href="admin.html" class="admin-btn">⬡ ADMIN</a>
     </nav>
   </div>
 </header>
@@ -144,6 +178,7 @@
       </div>
       <div class="cards" id="cards-current"><div class="skeleton"></div><div class="skeleton"></div></div>
     </section>
+
     <section class="section sec-upcoming">
       <div class="section-header">
         <div class="section-dot"></div>
@@ -152,6 +187,7 @@
       </div>
       <div class="cards" id="cards-upcoming"><div class="skeleton"></div><div class="skeleton"></div></div>
     </section>
+
     <section class="section sec-done">
       <div class="section-header">
         <div class="section-dot"></div>
@@ -160,6 +196,7 @@
       </div>
       <div class="cards" id="cards-done"><div class="skeleton"></div></div>
     </section>
+
     <section class="section sec-cancelled">
       <div class="section-header">
         <div class="section-dot"></div>
@@ -223,134 +260,87 @@
 
 <footer>
   <div class="footer-inner">
-    <span class="footer-text">THE COMPLEX // Development Roadmap</span>
-    <span class="footer-text">Last updated: <span id="last-updated">—</span></span>
+    <span class="footer-text">THE COMPLEX 
+    <span class="footer-text">Last updated: <span id="last-updated"></span></span>
   </div>
 </footer>
 
-<div class="lightbox" id="lightbox">
-  <button class="lightbox-close" id="lightbox-close">✕</button>
-  <img id="lightbox-img" src="" alt="" />
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()" />
 </div>
 
 <script>
 const SUPABASE_URL  = 'https://cxuggvcfxkigcdotpain.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4dWdndmNmeGtpZ2Nkb3RwYWluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExMTYwNTcsImV4cCI6MjA5NjY5MjA1N30.PYWPk24ktcVDeE6u0JPfWo7lFlQOTZZ7ayOjQoMv9eU';
-const ALLOWED_IMG_ORIGIN = 'https://cxuggvcfxkigcdotpain.supabase.co';
 
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
 
-function safeUrl(url) {
-  try {
-    const u = new URL(url);
-    if (u.protocol !== 'https:') return null;
-    if (!url.startsWith(ALLOWED_IMG_ORIGIN)) return null;
-    return url;
-  } catch { return null; }
+function esc(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-
-const lightbox    = document.getElementById('lightbox');
-const lightboxImg = document.getElementById('lightbox-img');
 
 function openLightbox(src) {
-  const safe = safeUrl(src);
-  if (!safe) return;
-  lightboxImg.src = safe;
-  lightbox.classList.add('open');
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
-
 function closeLightbox() {
-  lightbox.classList.remove('open');
-  lightboxImg.src = '';
+  document.getElementById('lightbox').classList.remove('open');
   document.body.style.overflow = '';
 }
-
-document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
-lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 
 function buildGallery(images) {
-  if (!images || !images.length) return null;
-  const valid = images.map(safeUrl).filter(Boolean);
-  if (!valid.length) return null;
-  const cols = Math.min(valid.length, 3);
-  const gallery = document.createElement('div');
-  gallery.className = `card-gallery cols-${cols}`;
-  valid.forEach(url => {
-    const img = document.createElement('img');
-    img.src = url;
-    img.alt = '';
-    img.loading = 'lazy';
-    img.addEventListener('click', () => openLightbox(url));
-    gallery.appendChild(img);
-  });
-  return gallery;
+  if (!images || !images.length) return '';
+  const cols = Math.min(images.length, 3);
+  const imgs = images.map(url =>
+    `<img src="${esc(url)}" alt="" loading="lazy" onclick="openLightbox('${esc(url)}')" />`
+  ).join('');
+  return `<div class="card-gallery cols-${cols}">${imgs}</div>`;
 }
 
 function buildDesc(desc) {
-  if (!desc) return null;
-  const lines   = desc.trim().split('\n').map(l => l.trim()).filter(Boolean);
-  const bullets  = lines.filter(l => l.startsWith('-'));
-  const prose    = lines.filter(l => !l.startsWith('-'));
-  const wrapper  = document.createElement('div');
-  wrapper.className = 'card-desc';
-  if (prose.length) {
-    const p = document.createElement('p');
-    p.textContent = prose.join(' ');
-    wrapper.appendChild(p);
-  }
+  if (!desc) return '';
+  const lines = desc.trim().split('\n').map(l => l.trim()).filter(Boolean);
+  const bullets = lines.filter(l => l.startsWith('-'));
+  const prose   = lines.filter(l => !l.startsWith('-'));
+  let html = '';
+  if (prose.length) html += `<p>${esc(prose.join(' '))}</p>`;
   if (bullets.length) {
-    const ul = document.createElement('ul');
-    bullets.forEach(b => {
-      const li = document.createElement('li');
-      li.textContent = b.replace(/^-\s*/, '');
-      ul.appendChild(li);
-    });
-    wrapper.appendChild(ul);
+    html += '<ul>' + bullets.map(b => `<li>${esc(b.replace(/^-\s*/, ''))}</li>`).join('') + '</ul>';
   }
-  return wrapper;
+  return html;
 }
 
 function renderCard(item) {
-  const card = document.createElement('div');
-  card.className = 'card';
   const gallery = buildGallery(item.images);
-  if (gallery) card.appendChild(gallery);
-  const body = document.createElement('div');
-  body.className = 'card-body';
-  const title = document.createElement('div');
-  title.className = 'card-title';
-  title.textContent = item.title;
-  body.appendChild(title);
-  const desc = buildDesc(item.description);
-  if (desc) body.appendChild(desc);
-  if (item.is_major) {
-    const tag = document.createElement('span');
-    tag.className = 'card-tag';
-    tag.textContent = 'Major Update';
-    body.appendChild(tag);
-  }
-  card.appendChild(body);
-  return card;
+  const desc    = buildDesc(item.description);
+  const tag     = item.is_major ? '<span class="card-tag">Major Update</span>' : '';
+  return `
+    <div class="card">
+      ${gallery}
+      <div class="card-body">
+        <div class="card-title">${esc(item.title)}</div>
+        ${desc ? `<div class="card-desc">${desc}</div>` : ''}
+        ${tag}
+      </div>
+    </div>`;
 }
 
 async function loadRoadmap() {
   const { data, error } = await sb
     .from('roadmap_items')
-    .select('id, title, status, description, images, is_major, updated_at, sort_order')
+    .select('*')
     .order('sort_order', { ascending: true })
     .order('created_at',  { ascending: true });
 
   if (error) {
+    console.error('Supabase error:', error);
     ['current','upcoming','done','cancelled'].forEach(s => {
-      const el = document.getElementById(`cards-${s}`);
-      el.innerHTML = '';
-      const msg = document.createElement('div');
-      msg.className = 'empty-state';
-      msg.textContent = 'Could not load items.';
-      el.appendChild(msg);
+      document.getElementById(`cards-${s}`).innerHTML =
+        '<div class="empty-state">Could not load items.</div>';
     });
     return;
   }
@@ -369,27 +359,15 @@ async function loadRoadmap() {
     const container = document.getElementById(`cards-${status}`);
     const label     = document.getElementById(`label-${status}`);
     label.textContent = `${items.length} item${items.length !== 1 ? 's' : ''}`;
-    container.innerHTML = '';
     if (!items.length) {
-      const msg = document.createElement('div');
-      msg.className = 'empty-state';
-      msg.textContent = 'Nothing here yet.';
-      container.appendChild(msg);
+      container.innerHTML = '<div class="empty-state">Nothing here yet.</div>';
     } else {
-      items.forEach(item => container.appendChild(renderCard(item)));
+      container.innerHTML = items.map(renderCard).join('');
     }
   });
 
-  const allItems = data || [];
-  if (allItems.length) {
-    const latest = allItems.reduce((a, b) =>
-      new Date(a.updated_at) > new Date(b.updated_at) ? a : b
-    );
-    if (latest.updated_at) {
-      document.getElementById('last-updated').textContent =
-        new Date(latest.updated_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-    }
-  }
+  document.getElementById('last-updated').textContent =
+    new Date().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
 }
 
 loadRoadmap();
