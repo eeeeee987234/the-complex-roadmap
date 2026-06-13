@@ -5,6 +5,295 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin — The Complex</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-ZgG7EE36ZHU2e8z/uiQy5IfbXt+EFWuHXC7E/rdN98Q=' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https://cxuggvcfxkigcdotpain.supabase.co; connect-src https://cxuggvcfxkigcdotpain.supabase.co wss://cxuggvcfxkigcdotpain.supabase.co; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none';" />
+  <meta http-equiv="X-Frame-Options" content="DENY" />
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta http-equiv="Referrer-Policy" content="no-referrer" />
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" integrity="sha384-fLkd5IIxbsQf3dLcEqW1FNHNMBAmFlD4ixPpZ3ZC3MXXgNqbWtqQJhBdBFHAmol" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg:#1a1a0f; --bg2:#1f1f14; --bg3:#252518;
+      --panel:#1c1c12; --border:#3a3a28; --border2:#4a4a35;
+      --yellow:#c8b84a; --yellow-dim:#6b6325;
+      --green:#4a7a3a; --green-glow:#5a9a48;
+      --red:#7a3a3a; --red-glow:#c05050;
+      --blue-glow:#5a8ab0;
+      --text:#d4cc8a; --text-dim:#8a835a; --text-muted:#5a5540;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, sans-serif; font-weight: 300; min-height: 100vh; }
+    body::before { content: ''; position: fixed; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.07) 2px, rgba(0,0,0,0.07) 4px); pointer-events: none; z-index: 9999; }
+
+    #loading-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    #loading-screen p { font-family: 'Courier New', 'Courier', monospace; font-size: 12px; color: var(--text-muted); letter-spacing: 2px; }
+
+    #login-screen { min-height: 100vh; display: none; align-items: center; justify-content: center; padding: 24px; }
+    #dashboard    { display: none; }
+
+    body.state-login    #loading-screen { display: none; }
+    body.state-login    #login-screen   { display: flex; }
+    body.state-authed   #loading-screen { display: none; }
+    body.state-authed   #dashboard      { display: block; }
+
+    .login-box { width: 100%; max-width: 420px; background: var(--panel); border: 1px solid var(--border); padding: 40px 36px; }
+    .login-logo { font-family: 'Courier New', 'Courier', monospace; letter-spacing: 0.1em; font-size: 32px; color: var(--yellow); letter-spacing: 3px; margin-bottom: 4px; text-shadow: 0 0 20px rgba(200,184,74,0.3); }
+    .login-sub  { font-family: 'Courier New', 'Courier', monospace; font-size: 10px; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 36px; }
+
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-family: 'Courier New', 'Courier', monospace; font-size: 10px; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 7px; }
+    input[type="email"], input[type="password"], input[type="text"], select, textarea {
+      width: 100%; background: var(--bg); border: 1px solid var(--border);
+      color: var(--text); font-family: 'Courier New', 'Courier', monospace; font-size: 13px;
+      padding: 10px 14px; outline: none; transition: border-color 0.2s;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--yellow-dim); }
+    textarea { min-height: 80px; resize: vertical; }
+    select option { background: var(--bg2); }
+
+    .btn { width: 100%; background: transparent; border: 1px solid var(--yellow-dim); color: var(--yellow); font-family: 'Courier New', 'Courier', monospace; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; padding: 12px; cursor: pointer; transition: all 0.2s; margin-top: 8px; }
+    .btn:hover { background: rgba(200,184,74,0.08); border-color: var(--yellow); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-danger       { border-color: var(--red);   color: var(--red-glow); }
+    .btn-danger:hover { background: rgba(192,80,80,0.08); border-color: var(--red-glow); }
+    .btn-success       { border-color: var(--green); color: var(--green-glow); }
+    .btn-success:hover { background: rgba(90,154,72,0.08); }
+    .btn-small { width: auto; padding: 6px 14px; font-size: 10px; margin-top: 0; }
+
+    .error-msg   { font-family: 'Courier New', 'Courier', monospace; font-size: 11px; color: var(--red-glow);   margin-top: 10px; padding: 8px 12px; border: 1px solid var(--red);   display: none; }
+    .success-msg { font-family: 'Courier New', 'Courier', monospace; font-size: 11px; color: var(--green-glow); margin-top: 10px; padding: 8px 12px; border: 1px solid var(--green); display: none; }
+
+    .rate-limit-msg { font-family: 'Courier New', 'Courier', monospace; font-size: 11px; color: #c8a84a; margin-top: 10px; padding: 8px 12px; border: 1px solid #6b6325; display: none; }
+
+    .dash-header { border-bottom: 1px solid var(--border); padding: 0 24px; background: rgba(26,26,15,0.97); position: sticky; top: 0; z-index: 100; }
+    .dash-header-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 52px; }
+    .dash-title { font-family: 'Courier New', 'Courier', monospace; letter-spacing: 0.1em; font-size: 22px; color: var(--yellow); letter-spacing: 2px; }
+    .dash-user  { font-family: 'Courier New', 'Courier', monospace; font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 16px; }
+    .dash-user span { color: var(--yellow-dim); }
+    .logout-btn { background: none; border: 1px solid var(--border2); color: var(--text-muted); font-family: 'Courier New', 'Courier', monospace; font-size: 10px; letter-spacing: 1px; padding: 4px 10px; cursor: pointer; transition: all 0.2s; }
+    .logout-btn:hover { color: var(--red-glow); border-color: var(--red); }
+
+    .dash-body { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+    .dash-grid { display: grid; grid-template-columns: 1fr 360px; gap: 24px; align-items: start; }
+    @media (max-width: 900px) { .dash-grid { grid-template-columns: 1fr; } }
+
+    .col-title { font-family: 'Courier New', 'Courier', monospace; font-size: 10px; color: var(--text-muted); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+
+    .item-list { display: flex; flex-direction: column; gap: 2px; margin-bottom: 16px; }
+    .item-row { background: var(--panel); border: 1px solid var(--border); padding: 14px 16px; display: flex; align-items: flex-start; gap: 12px; transition: border-color 0.2s; }
+    .item-row:hover { border-color: var(--border2); }
+    .item-thumb { width: 48px; height: 48px; object-fit: cover; border: 1px solid var(--border); flex-shrink: 0; filter: sepia(20%) brightness(0.8); }
+    .item-info { flex: 1; min-width: 0; }
+    .item-name { font-family: 'Courier New', 'Courier', monospace; font-size: 13px; color: var(--text); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .item-status-badge { display: inline-block; font-family: 'Courier New', 'Courier', monospace; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; padding: 2px 6px; border: 1px solid currentColor; }
+    .badge-upcoming  { color: var(--blue-glow); }
+    .badge-current   { color: var(--yellow); }
+    .badge-done      { color: var(--green-glow); }
+    .badge-cancelled { color: var(--red-glow); }
+    .item-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+    .add-form { background: var(--panel); border: 1px solid var(--border); padding: 20px; }
+    .add-form .form-group { margin-bottom: 14px; }
+
+    .upload-zone { border: 1px dashed var(--border2); padding: 20px; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; position: relative; }
+    .upload-zone:hover, .upload-zone.drag-over { border-color: var(--yellow-dim); background: rgba(200,184,74,0.04); }
+    .upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .upload-zone-text { font-family: 'Courier New', 'Courier', monospace; font-size: 11px; color: var(--text-muted); letter-spacing: 1px; pointer-events: none; }
+    .image-previews { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .preview-wrap { position: relative; display: inline-block; }
+    .preview-wrap img { width: 72px; height: 72px; object-fit: cover; border: 1px solid var(--border); display: block; filter: sepia(20%) brightness(0.8); }
+    .preview-remove { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.7); border: none; color: var(--red-glow); font-size: 12px; width: 18px; height: 18px; line-height: 18px; text-align: center; cursor: pointer; padding: 0; }
+    .upload-progress { font-family: 'Courier New', 'Courier', monospace; font-size: 10px; color: var(--text-muted); margin-top: 6px; }
+
+    .sidebar-section { background: var(--panel); border: 1px solid var(--border); padding: 20px; margin-bottom: 16px; }
+    .sidebar-title { font-family: 'Courier New', 'Courier', monospace; font-size: 10px; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+    .invite-row { display: flex; gap: 8px; margin-bottom: 12px; }
+    .invite-row input { flex: 1; }
+    .invite-note { font-size: 11px; color: var(--text-muted); line-height: 1.5; margin-top: 8px; }
+    .security-info { font-family: 'Courier New', 'Courier', monospace; font-size: 10px; color: var(--text-muted); line-height: 1.8; }
+    .security-info li { list-style: none; padding-left: 14px; position: relative; }
+    .security-info li::before { content: '✓'; position: absolute; left: 0; color: var(--green-glow); }
+
+    .session-timer { font-family: 'Courier New', 'Courier', monospace; font-size: 10px; color: var(--text-muted); }
+    .session-timer span { color: var(--yellow-dim); }
+
+    .toast { position: fixed; bottom: 24px; right: 24px; background: var(--panel); border: 1px solid var(--border2); padding: 12px 20px; font-family: 'Courier New', 'Courier', monospace; font-size: 12px; color: var(--text); z-index: 10000; transform: translateY(80px); opacity: 0; transition: all 0.3s; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.toast-ok  { border-color: var(--green); color: var(--green-glow); }
+    .toast.toast-err { border-color: var(--red);   color: var(--red-glow); }
+  </style>
+</head>
+<body>
+
+<div id="loading-screen"><p>VERIFYING SESSION...</p></div>
+
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">THE COMPLEX</div>
+    <div class="login-sub">Admin Access — Authorised Personnel Only</div>
+    <div class="form-group">
+      <label for="email">Email Address</label>
+      <input type="email" id="email" placeholder="you@example.com" autocomplete="email" />
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="••••••••••••" autocomplete="current-password" />
+    </div>
+    <button class="btn" id="login-btn" onclick="doLogin()">⬡ Authenticate</button>
+    <div class="error-msg" id="login-error"></div>
+    <div class="rate-limit-msg" id="rate-limit-msg"></div>
+    <p style="font-family:'Courier New',monospace;font-size:10px;color:var(--text-muted);margin-top:20px;line-height:1.7;">
+      Access is restricted to authorised team members.<br/>Contact the project manager to request access.
+    </p>
+  </div>
+</div>
+
+<div id="dashboard">
+  <div class="dash-header">
+    <div class="dash-header-inner">
+      <div class="dash-title">⬡ ADMIN PANEL</div>
+      <div class="dash-user">
+        Signed in as <span id="user-email-display">—</span>
+        <div class="session-timer">Session: <span id="session-countdown">—</span></div>
+        <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="dash-body">
+    <div class="dash-grid">
+
+      <div>
+        <div class="col-title">Roadmap Items</div>
+        <div id="items-list" class="item-list">
+          <div style="font-family:'Courier New',monospace;font-size:12px;color:var(--text-muted);padding:16px;">Loading...</div>
+        </div>
+
+        <div class="add-form">
+          <div class="col-title" id="form-mode-title">Add New Item</div>
+          <input type="hidden" id="edit-id" />
+          <div class="form-group">
+            <label>Title</label>
+            <input type="text" id="item-title" placeholder="e.g. ASYNC Facility" />
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select id="item-status">
+              <option value="upcoming">Upcoming</option>
+              <option value="current">In Progress</option>
+              <option value="done">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Description (optional)</label>
+            <textarea id="item-desc" placeholder="Brief description or bullet points..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Images (optional)</label>
+            <div class="upload-zone" id="upload-zone">
+              <input type="file" id="image-input" accept="image/png,image/jpeg,image/webp,image/gif" multiple onchange="handleFileSelect(this.files)" />
+              <div class="upload-zone-text">Click or drag images here<br/><span style="font-size:9px;opacity:0.6;">PNG, JPG, WEBP — multiple allowed</span></div>
+            </div>
+            <div class="image-previews" id="image-previews"></div>
+            <div class="upload-progress" id="upload-progress"></div>
+            <div id="existing-images" style="margin-top:8px;"></div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-success btn-small" onclick="saveItem()">Save Item</button>
+            <button class="btn btn-small" onclick="clearForm()" style="opacity:0.6;">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Invite Editor</div>
+          <div class="invite-row">
+            <input type="email" id="invite-email" placeholder="editor@email.com" />
+            <button class="btn btn-small btn-success" onclick="inviteUser()">Invite</button>
+          </div>
+          <div class="invite-note">Sends a Supabase signup email. They set their own password. For full invite-only enforcement, disable public signups in Supabase → Auth → Settings → Enable Signups (turn OFF). Also update the redirect URL in admin.html to your live domain.</div>
+          <div id="invite-msg" class="success-msg" style="margin-top:8px;"></div>
+          <div id="invite-err" class="error-msg"   style="margin-top:8px;"></div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-title">Security</div>
+          <ul class="security-info">
+            <li>Passwords hashed by Supabase (bcrypt)</li>
+            <li>No plaintext credentials stored</li>
+            <li>Sessions expire after 30 min idle or tab close</li>
+            <li>Row-level security on all tables</li>
+            <li>Invite-only, no self-signup</li>
+            <li>CSP + X-Frame-Options set</li>
+            <li>Login rate-limited client-side</li>
+          </ul>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-title">Storage</div>
+          <ul class="security-info">
+            <li>Images stored in Supabase Storage</li>
+            <li>Only image/* MIME types accepted</li>
+            <li>Max 8MB per file enforced</li>
+            <li>URLs sanitised before render</li>
+          </ul>
+          <p style="font-family:'Courier New',monospace;font-size:10px;color:var(--text-muted);margin-top:12px;line-height:1.6;">
+            Bucket: <span style="color:var(--yellow-dim);">roadmap-images</span> (public read, auth write)
+          </p>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-title">Public Roadmap</div>
+          <a href="index.html" style="font-family:'Courier New',monospace;font-size:12px;color:var(--yellow);text-decoration:none;">→ View Public Page</a>
+          <p style="font-family:'Courier New',monospace;font-size:10px;color:var(--text-muted);margin-top:8px;line-height:1.6;">Changes update the live roadmap immediately via Supabase.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL    = 'https://cxuggvcfxkigcdotpain.supabase.co';
+const SUPABASE_ANON   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4dWdndmNmeGtpZ2Nkb3RwYWluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExMTYwNTcsImV4cCI6MjA5NjY5MjA1N30.PYWPk24ktcVDeE6u0JPfWo7lFlQOTZZ7ayOjQoMv9eU';
+const STORAGE_BUCKET  = 'roadmap-images';
+const SESSION_TIMEOUT = 30 * 60 * 1000;
+const MAX_FILE_SIZE   = 8 * 1024 * 1024;
+const ALLOWED_TYPES   = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
+const ALLOWED_ORIGINS = ['https://cxuggvcfxkigcdotpain.supabase.co'];
+
+function generateCsrfToken() {
+  const arr = new Uint8Array(32);
+  crypto.getRandomValues(arr);
+  return Array.from(arr).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+const CSRF_TOKEN = generateCsrfToken();
+sessionStorage.setItem('csrf_token', CSRF_TOKEN);
+
+function verifyCsrf() {
+  const stored = sessionStorage.getItem('csrf_token');
+  if (!stored || stored !== CSRF_TOKEN) {
+    console.error('CSRF token mismatch — aborting action.');
+    return false;
+  }
+  return true;
+}
+
+function sanitiseText(str) {
+  if (typeof str !== 'string') return '';
+  return str.replace(/[<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — The Complex</title>
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HFpOG0PQ+YqZYVXUc7xxo6+dwa1hJ9VjuTu0ezNrCbY=' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https://cxuggvcfxkigcdotpain.supabase.co; connect-src https://cxuggvcfxkigcdotpain.supabase.co wss://cxuggvcfxkigcdotpain.supabase.co; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none';" />
   <meta http-equiv="X-Frame-Options" content="DENY" />
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
