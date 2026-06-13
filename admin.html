@@ -102,9 +102,9 @@
   </style>
 </head>
 <body>
-
+ 
 <div id="loading-screen"><p>VERIFYING SESSION...</p></div>
-
+ 
 <div id="login-screen">
   <div class="login-box">
     <div class="login-logo">THE COMPLEX</div>
@@ -123,7 +123,7 @@
     <p style="font-size:10px;color:var(--text-muted);margin-top:20px;line-height:1.7;">Access is restricted to authorised team members.</p>
   </div>
 </div>
-
+ 
 <div id="dashboard">
   <div class="dash-header">
     <div class="dash-header-inner">
@@ -208,9 +208,9 @@
     </div>
   </div>
 </div>
-
+ 
 <div class="toast" id="toast"></div>
-
+ 
 <script>
 const SUPABASE_URL    = 'https://cxuggvcfxkigcdotpain.supabase.co';
 const SUPABASE_ANON   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4dWdndmNmeGtpZ2Nkb3RwYWluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExMTYwNTcsImV4cCI6MjA5NjY5MjA1N30.PYWPk24ktcVDeE6u0JPfWo7lFlQOTZZ7ayOjQoMv9eU';
@@ -219,16 +219,16 @@ const SESSION_TIMEOUT = 30 * 60 * 1000;
 const MAX_FILE_SIZE   = 8 * 1024 * 1024;
 const ALLOWED_TYPES   = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
 const ALLOWED_ORIGINS = ['https://cxuggvcfxkigcdotpain.supabase.co'];
-
+ 
 function generateCsrfToken() {
   const arr = new Uint8Array(32);
   crypto.getRandomValues(arr);
   return Array.from(arr).map(b => b.toString(16).padStart(2, '0')).join('');
 }
-
+ 
 const CSRF_TOKEN = generateCsrfToken();
 sessionStorage.setItem('csrf_token', CSRF_TOKEN);
-
+ 
 function verifyCsrf() {
   const stored = sessionStorage.getItem('csrf_token');
   if (!stored || stored !== CSRF_TOKEN) {
@@ -237,7 +237,514 @@ function verifyCsrf() {
   }
   return true;
 }
-
+ 
 function sanitiseText(str) {
   if (typeof str !== 'string') return '';
-  return str.replace(/[
+  return str.replace(/[--]/g, '').trim().slice(0, 2000);
+}
+ 
+function sanitiseStatus(s) {
+  const allowed = ['upcoming', 'current', 'done', 'cancelled'];
+  return allowed.includes(s) ? s : null;
+}
+ 
+async function logAccessAttempt(email, success) {
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/access_log`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON,
+        'Authorization': `Bearer ${SUPABASE_ANON}`,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({
+        email: email.slice(0, 254),
+        success,
+        user_agent: navigator.userAgent.slice(0, 500),
+        timestamp: new Date().toISOString()
+      })
+    });
+  } catch (_) {}
+}
+ 
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: false
+  }
+});
+ 
+function toast(msg, type = 'ok') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast toast-${type} show`;
+  setTimeout(() => el.className = 'toast', 3000);
+}
+ 
+function esc(str) {
+  return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+ 
+function safeUrl(url) {
+  try {
+    const u = new URL(url);
+    if (u.protocol !== 'https:') return '';
+    if (!ALLOWED_ORIGINS.some(o => url.startsWith(o))) return '';
+    return url;
+  } catch { return ''; }
+}
+ 
+function statusLabel(s) {
+  return { upcoming: 'Upcoming', current: 'In Progress', done: 'Completed', cancelled: 'Cancelled' }[s] || s;
+}
+ 
+let loginAttempts = parseInt(sessionStorage.getItem('loginAttempts') || '0');
+let lockoutUntil  = parseInt(sessionStorage.getItem('lockoutUntil')  || '0');
+ 
+async function doLogin() {
+  const now = Date.now();
+  if (now < lockoutUntil) {
+    const secs = Math.ceil((lockoutUntil - now) / 1000);
+    showRateLimit(`Too many attempts. Try again in ${secs}s.`);
+    return;
+  }
+ 
+  const email = document.getElementById('email').value.trim();
+  const pass  = document.getElementById('password').value;
+  const errEl = document.getElementById('login-error');
+  const btn   = document.getElementById('login-btn');
+ 
+  errEl.style.display = 'none';
+  document.getElementById('rate-limit-msg').style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = 'Authenticating...';
+ 
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+ 
+  btn.disabled = false;
+  btn.textContent = '⬡ Authenticate';
+ 
+  if (error) {
+    loginAttempts++;
+    await logAccessAttempt(email, false);
+    if (loginAttempts >= 5) {
+      const delay = Math.min(30 * 1000 * Math.pow(2, loginAttempts - 5), 10 * 60 * 1000);
+      lockoutUntil = Date.now() + delay;
+      sessionStorage.setItem('loginAttempts', String(loginAttempts));
+      sessionStorage.setItem('lockoutUntil',  String(lockoutUntil));
+      showRateLimit(`Too many failed attempts. Locked for ${Math.ceil(delay / 1000)}s.`);
+      startLockoutCountdown();
+    } else {
+      errEl.textContent = 'Invalid credentials.';
+      errEl.style.display = 'block';
+    }
+    return;
+  }
+ 
+  loginAttempts = 0;
+  lockoutUntil  = 0;
+  sessionStorage.removeItem('loginAttempts');
+  sessionStorage.removeItem('lockoutUntil');
+  await logAccessAttempt(email, true);
+  showDashboard(data.user);
+  startSessionTimer();
+}
+ 
+function showRateLimit(msg) {
+  const el = document.getElementById('rate-limit-msg');
+  el.textContent = msg;
+  el.style.display = 'block';
+  document.getElementById('login-error').style.display = 'none';
+}
+ 
+function startLockoutCountdown() {
+  const el  = document.getElementById('rate-limit-msg');
+  const btn = document.getElementById('login-btn');
+  btn.disabled = true;
+  const iv = setInterval(() => {
+    const remaining = Math.ceil((lockoutUntil - Date.now()) / 1000);
+    if (remaining <= 0) {
+      clearInterval(iv);
+      btn.disabled = false;
+      el.style.display = 'none';
+    } else {
+      el.textContent = `Too many failed attempts. Locked for ${remaining}s.`;
+    }
+  }, 1000);
+}
+ 
+let sessionExpiry   = 0;
+let sessionTimerIv  = null;
+let idleTimerHandle = null;
+ 
+function startSessionTimer() {
+  sessionExpiry = Date.now() + SESSION_TIMEOUT;
+  clearInterval(sessionTimerIv);
+  sessionTimerIv = setInterval(() => {
+    const remaining = sessionExpiry - Date.now();
+    if (remaining <= 0) {
+      clearInterval(sessionTimerIv);
+      doLogout();
+      return;
+    }
+    const m = Math.floor(remaining / 60000);
+    const s = Math.floor((remaining % 60000) / 1000);
+    document.getElementById('session-countdown').textContent =
+      `${m}:${String(s).padStart(2, '0')}`;
+  }, 1000);
+}
+ 
+function resetIdleTimer() {
+  sessionExpiry = Date.now() + SESSION_TIMEOUT;
+}
+ 
+document.addEventListener('mousemove', resetIdleTimer);
+document.addEventListener('keydown',   resetIdleTimer);
+ 
+async function doLogout() {
+  clearInterval(sessionTimerIv);
+  await sb.auth.signOut();
+  document.body.className = 'state-login';
+}
+ 
+function showDashboard(user) {
+  document.body.className = 'state-authed';
+  document.getElementById('user-email-display').textContent = user.email;
+  loadItems();
+}
+ 
+async function checkInitialSession() {
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      showDashboard(session.user);
+      startSessionTimer();
+    } else {
+      document.body.className = 'state-login';
+    }
+  } catch (_) {
+    document.body.className = 'state-login';
+  }
+}
+ 
+checkInitialSession();
+ 
+sb.auth.onAuthStateChange((event, session) => {
+  if (session && event === 'SIGNED_IN') {
+    showDashboard(session.user);
+    startSessionTimer();
+  } else if (!session) {
+    document.body.className = 'state-login';
+  }
+});
+ 
+document.getElementById('password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+ 
+let pendingFiles   = [];
+let pendingRemoved = [];
+ 
+function handleFileSelect(files) {
+  for (const file of files) {
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      toast(`Rejected: ${file.name} (not an allowed image type)`, 'err');
+      continue;
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      toast(`Rejected: ${file.name} (max 8MB)`, 'err');
+      continue;
+    }
+    const reader = new FileReader();
+    reader.onload = e => addPreview(file, e.target.result);
+    reader.readAsDataURL(file);
+    pendingFiles.push(file);
+  }
+  document.getElementById('image-input').value = '';
+}
+ 
+function addPreview(file, dataUrl) {
+  const wrap = document.createElement('div');
+  wrap.className = 'preview-wrap';
+  const img = document.createElement('img');
+  img.src = dataUrl;
+  img.alt = '';
+  const btn = document.createElement('button');
+  btn.className = 'preview-remove';
+  btn.title = 'Remove';
+  btn.textContent = '✕';
+  btn.onclick = () => {
+    pendingFiles = pendingFiles.filter(f => f !== file);
+    wrap.remove();
+  };
+  wrap.appendChild(img);
+  wrap.appendChild(btn);
+  document.getElementById('image-previews').appendChild(wrap);
+}
+ 
+const zone = document.getElementById('upload-zone');
+zone.addEventListener('dragover',  e => { e.preventDefault(); zone.classList.add('drag-over'); });
+zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+zone.addEventListener('drop', e => {
+  e.preventDefault();
+  zone.classList.remove('drag-over');
+  handleFileSelect(e.dataTransfer.files);
+});
+ 
+async function uploadImages(itemId) {
+  const urls = [];
+  const prog = document.getElementById('upload-progress');
+  for (let i = 0; i < pendingFiles.length; i++) {
+    const file = pendingFiles[i];
+    const ext  = file.name.split('.').pop().replace(/[^a-z0-9]/gi, '');
+    const path = `${itemId}/${Date.now()}_${i}.${ext}`;
+    prog.textContent = `Uploading image ${i + 1} of ${pendingFiles.length}...`;
+    const { error } = await sb.storage.from(STORAGE_BUCKET).upload(path, file, { upsert: false });
+    if (error) { toast('Upload failed: ' + error.message, 'err'); continue; }
+    const { data: urlData } = sb.storage.from(STORAGE_BUCKET).getPublicUrl(path);
+    const safe = safeUrl(urlData.publicUrl);
+    if (safe) urls.push(safe);
+  }
+  prog.textContent = '';
+  return urls;
+}
+ 
+let items = [];
+ 
+async function loadItems() {
+  const { data, error } = await sb
+    .from('roadmap_items')
+    .select('*')
+    .order('sort_order', { ascending: true })
+    .order('created_at',  { ascending: true });
+  if (error) { toast('Failed to load items', 'err'); return; }
+  items = data || [];
+  renderItems();
+}
+ 
+function renderItems() {
+  const container = document.getElementById('items-list');
+  if (!items.length) {
+    container.innerHTML = '';
+    const empty = document.createElement('div');
+    empty.style.cssText = "font-family:'Courier New',monospace;font-size:12px;color:var(--text-muted);padding:16px;";
+    empty.textContent = 'No items yet. Add one below.';
+    container.appendChild(empty);
+    return;
+  }
+  const order  = { current: 0, upcoming: 1, done: 2, cancelled: 3 };
+  const sorted = [...items].sort((a, b) => (order[a.status] ?? 9) - (order[b.status] ?? 9));
+  container.innerHTML = '';
+  sorted.forEach(item => {
+    const row = document.createElement('div');
+    row.className = 'item-row';
+ 
+    const imgs = item.images || [];
+    if (imgs.length) {
+      const safe = safeUrl(imgs[0]);
+      if (safe) {
+        const thumb = document.createElement('img');
+        thumb.className = 'item-thumb';
+        thumb.src = safe;
+        thumb.alt = '';
+        row.appendChild(thumb);
+      }
+    }
+ 
+    const info = document.createElement('div');
+    info.className = 'item-info';
+ 
+    const name = document.createElement('div');
+    name.className = 'item-name';
+    name.title = item.title;
+    name.textContent = item.title;
+    info.appendChild(name);
+ 
+    const badge = document.createElement('span');
+    badge.className = `item-status-badge badge-${item.status}`;
+    badge.textContent = statusLabel(item.status);
+    info.appendChild(badge);
+ 
+    if (imgs.length) {
+      const ic = document.createElement('span');
+      ic.style.cssText = "font-family:'Courier New',monospace;font-size:9px;color:var(--text-muted);margin-left:6px;";
+      ic.textContent = `${imgs.length} img${imgs.length > 1 ? 's' : ''}`;
+      info.appendChild(ic);
+    }
+ 
+    row.appendChild(info);
+ 
+    const actions = document.createElement('div');
+    actions.className = 'item-actions';
+ 
+    const editBtn = document.createElement('button');
+    editBtn.className = 'btn btn-small';
+    editBtn.textContent = 'Edit';
+    editBtn.addEventListener('click', () => editItem(item.id));
+ 
+    const delBtn = document.createElement('button');
+    delBtn.className = 'btn btn-small btn-danger';
+    delBtn.textContent = 'Del';
+    delBtn.addEventListener('click', () => deleteItem(item.id));
+ 
+    actions.appendChild(editBtn);
+    actions.appendChild(delBtn);
+    row.appendChild(actions);
+    container.appendChild(row);
+  });
+}
+ 
+async function saveItem() {
+  if (!verifyCsrf()) { toast('Security token invalid. Refresh the page.', 'err'); return; }
+  const id     = document.getElementById('edit-id').value;
+  const title  = sanitiseText(document.getElementById('item-title').value);
+  const status = sanitiseStatus(document.getElementById('item-status').value);
+  const desc   = sanitiseText(document.getElementById('item-desc').value);
+  if (!title) { toast('Title is required', 'err'); return; }
+  if (!status) { toast('Invalid status', 'err'); return; }
+ 
+  let existingUrls = [];
+  if (id) {
+    const existing = items.find(i => i.id === id);
+    existingUrls = (existing?.images || []).filter(u => !pendingRemoved.includes(u));
+    for (const url of pendingRemoved) {
+      const path = url.split(`/${STORAGE_BUCKET}/`)[1];
+      if (path) await sb.storage.from(STORAGE_BUCKET).remove([decodeURIComponent(path)]);
+    }
+  }
+ 
+  const itemId  = id || crypto.randomUUID();
+  const newUrls = pendingFiles.length ? await uploadImages(itemId) : [];
+  const allImages = [...existingUrls, ...newUrls];
+ 
+  if (id) {
+    const { error } = await sb.from('roadmap_items')
+      .update({ title, status, description: desc, images: allImages, updated_at: new Date().toISOString() })
+      .eq('id', id);
+    if (error) { toast('Update failed.', 'err'); return; }
+    toast('Item updated ✓');
+  } else {
+    const { error } = await sb.from('roadmap_items')
+      .insert({ id: itemId, title, status, description: desc, images: allImages });
+    if (error) { toast('Insert failed.', 'err'); return; }
+    toast('Item added ✓');
+  }
+ 
+  clearForm();
+  loadItems();
+}
+ 
+function editItem(id) {
+  const item = items.find(i => i.id === id);
+  if (!item) return;
+  document.getElementById('edit-id').value     = item.id;
+  document.getElementById('item-title').value  = item.title;
+  document.getElementById('item-status').value = item.status;
+  document.getElementById('item-desc').value   = item.description || '';
+  document.getElementById('form-mode-title').textContent = 'Edit Item';
+  pendingFiles   = [];
+  pendingRemoved = [];
+  document.getElementById('image-previews').innerHTML = '';
+ 
+  const existing = item.images || [];
+  const existEl  = document.getElementById('existing-images');
+  existEl.innerHTML = '';
+ 
+  if (existing.length) {
+    const label = document.createElement('div');
+    label.style.cssText = "font-family:'Courier New',monospace;font-size:9px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;";
+    label.textContent = 'Current Images';
+    existEl.appendChild(label);
+ 
+    const grid = document.createElement('div');
+    grid.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;';
+ 
+    existing.forEach(url => {
+      const safe = safeUrl(url);
+      if (!safe) return;
+      const wrap = document.createElement('div');
+      wrap.className = 'preview-wrap';
+      const img = document.createElement('img');
+      img.src = safe;
+      img.alt = '';
+      const btn = document.createElement('button');
+      btn.className = 'preview-remove';
+      btn.title = 'Remove';
+      btn.textContent = '✕';
+      btn.addEventListener('click', () => {
+        pendingRemoved.push(url);
+        wrap.remove();
+      });
+      wrap.appendChild(img);
+      wrap.appendChild(btn);
+      grid.appendChild(wrap);
+    });
+ 
+    existEl.appendChild(grid);
+  }
+}
+ 
+function removeExistingImage(url, wrap) {
+  pendingRemoved.push(url);
+  wrap.remove();
+}
+ 
+async function deleteItem(id) {
+  if (!verifyCsrf()) { toast('Security token invalid. Refresh the page.', 'err'); return; }
+  if (!confirm('Delete this item and its images? This cannot be undone.')) return;
+  const item = items.find(i => i.id === id);
+  if (item?.images?.length) {
+    const paths = item.images
+      .map(u => u.split(`/${STORAGE_BUCKET}/`)[1])
+      .filter(Boolean)
+      .map(p => decodeURIComponent(p));
+    if (paths.length) await sb.storage.from(STORAGE_BUCKET).remove(paths);
+  }
+  const { error } = await sb.from('roadmap_items').delete().eq('id', id);
+  if (error) { toast('Delete failed.', 'err'); return; }
+  toast('Item deleted');
+  loadItems();
+}
+ 
+function clearForm() {
+  document.getElementById('edit-id').value     = '';
+  document.getElementById('item-title').value  = '';
+  document.getElementById('item-status').value = 'upcoming';
+  document.getElementById('item-desc').value   = '';
+  document.getElementById('image-previews').innerHTML  = '';
+  document.getElementById('existing-images').innerHTML = '';
+  document.getElementById('upload-progress').textContent = '';
+  document.getElementById('form-mode-title').textContent = 'Add New Item';
+  pendingFiles   = [];
+  pendingRemoved = [];
+}
+ 
+async function inviteUser() {
+  if (!verifyCsrf()) { toast('Security token invalid. Refresh the page.', 'err'); return; }
+  const email = document.getElementById('invite-email').value.trim();
+  const msgEl = document.getElementById('invite-msg');
+  const errEl = document.getElementById('invite-err');
+  msgEl.style.display = 'none';
+  errEl.style.display = 'none';
+  if (!email) { errEl.textContent = 'Enter an email.'; errEl.style.display = 'block'; return; }
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) { errEl.textContent = 'Not authenticated.'; errEl.style.display = 'block'; return; }
+  const { error } = await sb.auth.signUp({
+    email,
+    password: crypto.randomUUID(),
+    options: { emailRedirectTo: 'https://YOURDOMAIN/admin.html' }
+  });
+  if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; }
+  else {
+    msgEl.textContent = 'Invite sent to ' + email;
+    msgEl.style.display = 'block';
+    document.getElementById('invite-email').value = '';
+    toast('Invite sent ✓');
+  }
+}
+</script>
+</body>
+</html>
