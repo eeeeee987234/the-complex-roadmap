@@ -5,13 +5,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin — The Complex</title>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-NvIhanSMc/CJuKd1nviokm1VwBhH6VpNoiRQ7GDmPrU=' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https://cxuggvcfxkigcdotpain.supabase.co; connect-src https://cxuggvcfxkigcdotpain.supabase.co wss://cxuggvcfxkigcdotpain.supabase.co; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none';" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HFpOG0PQ+YqZYVXUc7xxo6+dwa1hJ9VjuTu0ezNrCbY=' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https://cxuggvcfxkigcdotpain.supabase.co; connect-src https://cxuggvcfxkigcdotpain.supabase.co wss://cxuggvcfxkigcdotpain.supabase.co; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none';" />
   <meta http-equiv="X-Frame-Options" content="DENY" />
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
   <meta http-equiv="Referrer-Policy" content="no-referrer" />
   <meta name="robots" content="noindex, nofollow, noarchive" />
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" integrity="sha384-fLkd5IIxbsQf3dLcEqW1FNHNMBAmFlD4ixPpZ3ZC3MXXgNqbWtqQJhBdBFHAmol" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js" integrity="sha384-rHPFBSFKMEaKDMxPB7cSTZvWfYMaF6gF5tqUPuiLives7VqoLNFkpCfWIXsimfFT" crossorigin="anonymous"></script>
   <style>
     :root {
       --bg:#1a1a0f; --bg2:#1f1f14; --bg3:#252518;
@@ -736,11 +736,6 @@ function editItem(id) {
 
     existEl.appendChild(grid);
   }
-}
-
-function removeExistingImage(url, wrap) {
-  pendingRemoved.push(url);
-  wrap.remove();
 }
 
 async function deleteItem(id) {
