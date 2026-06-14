@@ -736,7 +736,7 @@ async function inviteUser() {
   const { error } = await sb.auth.signUp({
     email,
     password: crypto.randomUUID(),
-    options: { emailRedirectTo: 'https://YOURDOMAIN/admin.html' }
+    options: { emailRedirectTo: 'https://the-complex.netlify.app/admin.html' }
   });
   if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; }
   else {
