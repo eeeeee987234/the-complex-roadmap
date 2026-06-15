@@ -1,0 +1,15 @@
+https://the-complex.pages.dev/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-site
+
+https://the-complex.pages.dev/index.html
+  Content-Security-Policy: default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://cxuggvcfxkigcdotpain.supabase.co; connect-src https://cxuggvcfxkigcdotpain.supabase.co wss://cxuggvcfxkigcdotpain.supabase.co; object-src 'none'; base-uri 'none'; frame-ancestors 'none';
+
+https://the-complex.pages.dev/admin.html
+  Content-Security-Policy: default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'unsafe-inline'; font-src 'self'; img-src 'self' data: https://cxuggvcfxkigcdotpain.supabase.co; connect-src https://cxuggvcfxkigcdotpain.supabase.co wss://cxuggvcfxkigcdotpain.supabase.co; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none';
+  Cache-Control: no-store, no-cache, must-revalidate
+  Pragma: no-cache
