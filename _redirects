@@ -1,0 +1,3 @@
+http://the-complex.pages.dev/* https://the-complex.pages.dev/:splat 301!
+/admin /admin.html 301
+/roadmap / 301
